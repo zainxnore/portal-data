@@ -7,29 +7,79 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 40px auto;
+            margin: 0 auto; /* Hapus margin atas/bawah agar header bisa penuh */
             max-width: 800px;
             line-height: 1.6;
             background-color: #f9f9f9;
             color: #333;
             padding: 0 20px;
         }
+
+        /* Gaya untuk Menu Navigasi */
+        nav {
+            background-color: #0366d6;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 800px;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Header utama */
         header {
             text-align: center;
             border-bottom: 2px solid #eee;
             padding-bottom: 20px;
+            padding-top: 40px; /* Jarak agar tidak menempel ke nav */
         }
+        
+        main {
+            margin: 20px auto;
+        }
+
         .dataset {
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sedikit bayangan */
         }
         .dataset-title {
             margin-top: 0;
             color: #0366d6;
         }
+        
+        /* Detail metadata */
+        .metadata {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+            border-top: 1px dashed #eee;
+            padding-top: 10px;
+        }
+        .metadata span {
+            display: inline-block;
+            margin-right: 15px;
+        }
+
         .download-link {
             display: inline-block;
             background-color: #28a745;
@@ -43,24 +93,43 @@
     </style>
 </head>
 <body>
-
+    
+    <nav>
+        <ul>
+            <li><a href="#">Beranda</a></li>
+            <li><a href="#main">Semua Data</a></li>
+            <li><a href="#">Tentang</a></li>
+            <li><a href="#">Kontak</a></li>
+        </ul>
+    </nav>
     <header>
         <h1>Portal Open Data Desa Kalitengah</h1>
-        <p>Kumpulan data yang saya publikasikan untuk umum.</p>
+        <p>Kumpulan data yang saya publikasikan untuk umum, transparan, dan dapat diakses siapa saja.</p>
     </header>
 
-    <main>
+    <main id="main">
         <section class="dataset">
             <h2 class="dataset-title">Data Penduduk</h2>
             <p>Deskripsi singkat data: Ini adalah data jumlah penduduk pada tahun 2024.</p>
-            <p>Format: CSV</p>
+            
+            <div class="metadata">
+                <span>**Kategori**: Demografi</span>
+                <span>**Format**: CSV</span>
+                <span>**Periode**: 2024</span>
+            </div>
             <a href="data_kependudukan_kalitengah2024.csv" class="download-link" download>Download Data (CSV)</a>
         </section>
 
         <section class="dataset">
             <h2 class="dataset-title">Data fasilitas umum</h2>
             <p>Deskripsi singkat data: Data ini berisi titik beberapa fasilitas umum yang ada di Desa kalitengah.</p>
-            <p>Format: JSON</p>
+            
+            <div class="metadata">
+                <span>**Kategori**: Infrastruktur</span>
+                <span>**Format**: JSON</span>
+                <span>**Periode**: Terbaru</span>
+            </div>
+            
             <a href="data_fasilitas_umum_kalitengah.json" class="download-link" download>Download Data (JSON)</a>
         </section>
 
@@ -68,21 +137,33 @@
         <section class="dataset">
             <h2 class="dataset-title">Data anggaran Desa Kalitengah</h2>
             <p>Deskripsi singkat data: Data ini berisi anggaran Desa kalitengah.</p>
-            <p>Format: CSV</p>
-            <a href="data_anggaran_desa_kalitengah_2024.csv" class="download-link" download>Download Data (JSON)</a>
+            
+            <div class="metadata">
+                <span>**Kategori**: Keuangan</span>
+                <span>**Format**: CSV</span>
+                <span>**Periode**: 2024</span>
+            </div>
+            
+            <a href="data_anggaran_desa_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
         </section>
         
         <section class="dataset">
             <h2 class="dataset-title">Data bantuan sosial Desa Kalitengah</h2>
             <p>Deskripsi singkat data: Data ini berisi bantuan sosial Desa kalitengah.</p>
-            <p>Format: CSV</p>
-            <a href="data_bantuan_sosial_kalitengah_2024.csv" class="download-link" download>Download Data (JSON)</a>
+            
+            <div class="metadata">
+                <span>**Kategori**: Kesejahteraan Sosial</span>
+                <span>**Format**: CSV</span>
+                <span>**Periode**: 2024</span>
+            </div>
+            
+            <a href="data_bantuan_sosial_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
         </section>
         
         </main>
 
     <footer>
-        <p style="text-align: center; color: #777;">
+        <p style="text-align: center; color: #777; padding: 20px 0; border-top: 1px solid #eee;">
             Website ini dibuat menggunakan GitHub Pages.
         </p>
     </footer>
