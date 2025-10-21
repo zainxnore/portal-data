@@ -1,0 +1,63 @@
+{
+  "info": {
+    "nama_desa": "Desa Kalitengah",
+    "tahun_data": 2024
+  },
+  "fasilitas": [
+    {
+      "id": "FAS-001",
+      "nama_fasilitas": "Kantor Desa Kalitengah",
+      "kategori": "Pemerintahan",
+      "dusun": "Krajan",
+      "lokasi": {
+        "alamat": "Jl. Raya Kalitengah No. 1",
+        "latitude": -7.12345,
+        "longitude": 110.12345
+      }
+    },
+    {
+      "id": "FAS-002",
+      "nama_fasilitas": "SD Negeri Kalitengah 1",
+      "kategori": "Pendidikan",
+      "dusun": "Krajan",
+      "lokasi": {
+        "alamat": "Jl. Pendidikan No. 10",
+        "latitude": -7.12400,
+        "longitude": 110.12400
+      }
+    },
+    {
+      "id": "FAS-003",
+      "nama_fasilitas": "Posyandu Mekar Jaya",
+      "kategori": "Kesehatan",
+      "dusun": "Gebang",
+      "lokasi": {
+        "alamat": "Jl. Sehat No. 5",
+        "latitude": -7.12550,
+        "longitude": 110.12550
+      }
+    },
+    {
+      "id": "FAS-004",
+      "nama_fasilitas": "Masjid Jami' Al-Hidayah",
+      "kategori": "Tempat Ibadah",
+      "dusun": "Sawahan",
+      "lokasi": {
+        "alamat": "Jl. Ibadah No. 1",
+        "latitude": -7.12600,
+        "longitude": 110.12600
+      }
+    },
+    {
+      "id": "FAS-005",
+      "nama_fasilitas": "Pasar Desa Kalitengah",
+      "kategori": "Ekonomi",
+      "dusun": "Krajan",
+      "lokasi": {
+        "alamat": "Jl. Pasar Lama No. 50",
+        "latitude": -7.12300,
+        "longitude": 110.12300
+      }
+    }
+  ]
+}
