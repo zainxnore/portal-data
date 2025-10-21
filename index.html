@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Open Data Sederhana</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 40px auto;
+            max-width: 800px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 0 20px;
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+        .dataset {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .dataset-title {
+            margin-top: 0;
+            color: #0366d6;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Portal Open Data Sederhana Saya</h1>
+        <p>Kumpulan data yang saya publikasikan untuk umum.</p>
+    </header>
+
+    <main>
+        <section class="dataset">
+            <h2 class="dataset-title">Data Penduduk</h2>
+            <p>Deskripsi singkat data: Ini adalah data jumlah penduduk per kecamatan pada tahun 2024.</p>
+            <p>Format: CSV</p>
+            <a href="data_penduduk.csv" class="download-link" download>Download Data (CSV)</a>
+        </section>
+
+        <section class="dataset">
+            <h2 class="dataset-title">Data Lokasi Sekolah</h2>
+            <p>Deskripsi singkat data: Data ini berisi titik koordinat (geospasial) lokasi sekolah SD dan SMP.</p>
+            <p>Format: JSON</p>
+            <a href="data_sekolah.json" class="download-link" download>Download Data (JSON)</a>
+        </section>
+        
+        </main>
+
+    <footer>
+        <p style="text-align: center; color: #777;">
+            Website ini dibuat menggunakan GitHub Pages.
+        </p>
+    </footer>
+
+</body>
+</html>
