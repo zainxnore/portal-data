@@ -7,13 +7,20 @@
     <style>
         /* === PERUBAHAN UTAMA DI SINI === */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; /* Hapus margin auto dari body */
-            line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
-            padding: 0; /* Hapus padding dari body */
-        }
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    background-color: #f9f9f9; /* Ini akan menjadi fallback jika gambar tidak bisa dimuat */
+    color: #333;
+    padding: 0;
+
+    /* === PROPERTI BACKGROUND BARU DI SINI === */
+    background-image: url('URL_GAMBAR_ANDA_DI_SINI'); /* Ganti dengan URL gambar Anda */
+    background-size: cover; /* Memastikan gambar mencakup seluruh area tanpa terpotong */
+    background-position: center center; /* Menengahkan gambar */
+    background-repeat: no-repeat; /* Mencegah gambar berulang */
+    background-attachment: fixed; /* Membuat gambar tetap di tempat saat halaman di-scroll (opsional) */
+}
         nav {
             background-color: #0366d6;
             padding: 10px 0;
