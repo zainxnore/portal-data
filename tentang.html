@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tentang - Portal Open Data Desa Kalitengah</title>
     <style>
+        /* === PERUBAHAN UTAMA DI SINI === */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0 auto;
-            max-width: 800px;
+            margin: 0; /* Hapus margin auto dari body */
             line-height: 1.6;
             background-color: #f9f9f9;
             color: #333;
-            padding: 0 20px;
+            padding: 0; /* Hapus padding dari body */
         }
         nav {
             background-color: #0366d6;
@@ -23,7 +23,7 @@
             list-style: none;
             padding: 0;
             margin: 0 auto;
-            max-width: 800px;
+            max-width: 800px; /* Link menu tetap dibatasi 800px agar di tengah */
             text-align: center;
         }
         nav ul li {
@@ -39,21 +39,30 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
-        /* CSS untuk konten halaman statis */
+        
+        /* Batasi lebar main (yang berisi .page-content) */
+        main {
+            margin: 20px auto; /* Menengahkan main */
+            max-width: 800px; /* Batasi lebar main */
+            padding: 0 20px; /* Tambahkan padding di sini */
+        }
+        /* === Akhir Perubahan Utama === */
+        
         .page-content {
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
-            margin: 40px auto;
+            margin: 40px 0; /* Hapus margin auto dari sini, karena 'main' sudah di tengah */
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         footer {
             text-align: center; 
             color: #777; 
-            padding: 20px 0; 
+            padding: 20px;
             border-top: 1px solid #eee;
-            margin-top: 20px;
+            margin: 20px auto 0 auto; /* Menengahkan footer */
+            max-width: 800px; /* Batasi lebar footer */
         }
     </style>
 </head>
