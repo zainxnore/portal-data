@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Open Data Desa Kalitengah</title>
     <style>
-        /* ... (Semua CSS Anda yang lama tetap di sini) ... */
+        /* CSS UTAMA */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
@@ -78,7 +78,6 @@
             margin-right: 15px;
         }
         .download-link {
-            /* ... (tidak berubah) ... */
              display: inline-block;
              background-color: #28a745;
              color: white;
@@ -97,15 +96,34 @@
             max-width: 800px;
         }
 
-        /* === 1. CSS BARU UNTUK KOTAK SEARCH === */
+        /* CSS BARU UNTUK KOTAK SEARCH */
         #searchInput {
-            width: 100%; /* Lebar penuh */
+            width: 100%; 
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            margin-bottom: 25px; /* Jarak ke dataset pertama */
-            box-sizing: border-box; /* Agar padding tidak merusak lebar */
+            margin-bottom: 25px; 
+            box-sizing: border-box; 
             font-size: 16px;
+        }
+        
+        /* CSS BARU UNTUK PRATINJAU TABEL */
+        .preview-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            overflow-x: auto; /* Agar responsif di HP */
+            display: block;
+        }
+        .preview-table th, .preview-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .preview-table th {
+            background-color: #f2f2f2;
         }
         
     </style>
@@ -123,7 +141,7 @@
 
     <header>
         <h1>Portal Open Data Desa Kalitengah</h1>
-        <p>Kumpulan data yang saya publikasikan untuk umum, transparan, dan dapat diakses siapa saja.</p>
+        <p>Kumpulan data yang dipublikasikan untuk umum, transparan, dan dapat diakses siapa saja.</p>
     </header>
 
     <main id="main"> 
@@ -132,82 +150,200 @@
         <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik nama data, misal: 'penduduk' atau 'anggaran'...">
 
         <section class="dataset">
-            <h2 class="dataset-title">Data Penduduk</h2>
-            <p>Deskripsi singkat data: Ini adalah data jumlah penduduk pada tahun 2024.</p>
+            <h2 class="dataset-title">Data Penduduk per Dusun</h2>
+            <p>Deskripsi singkat data: Ini adalah data jumlah penduduk per kelompok usia di Desa Kalitengah pada tahun 2024.</p>
             <div class="metadata">
                 <span>**Kategori**: Demografi</span>
                 <span>**Format**: CSV</span>
                 <span>**Periode**: 2024</span>
+                <span>**Update**: 2024-09-01</span>
             </div>
             <a href="data_kependudukan_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
+
+            <h4 style="margin-top: 20px;">Pratinjau (6 Baris Pertama)</h4>
+            <div id="preview-kependudukan" class="preview-table"></div>
+
+            <pre class="raw-csv-data" id="csv-kependudukan" style="display:none;">
+dusun,kelompok_usia,jumlah_laki_laki,jumlah_perempuan,total
+Dusun Krajan,0-5 Tahun,45,42,87
+Dusun Krajan,6-17 Tahun,110,115,225
+Dusun Krajan,18-55 Tahun,350,345,695
+Dusun Krajan,> 55 Tahun,80,95,175
+Dusun Gebang,0-5 Tahun,30,33,63
+Dusun Gebang,6-17 Tahun,90,85,175
+Dusun Gebang,18-55 Tahun,280,290,570
+Dusun Gebang,> 55 Tahun,65,70,135
+Dusun Sawahan,0-5 Tahun,25,28,53
+Dusun Sawahan,6-17 Tahun,75,80,155
+Dusun Sawahan,18-55 Tahun,210,215,425
+Dusun Sawahan,> 55 Tahun,50,60,110
+            </pre>
         </section>
 
         <section class="dataset">
-            <h2 class="dataset-title">Data fasilitas umum</h2>
-            <p>Deskripsi singkat data: Data ini berisi titik beberapa fasilitas umum yang ada di Desa kalitengah.</p>
+            <h2 class="dataset-title">Data Fasilitas Umum</h2>
+            <p>Deskripsi singkat data: Data ini berisi lokasi koordinat beberapa fasilitas umum di Desa Kalitengah.</p>
             <div class="metadata">
                 <span>**Kategori**: Infrastruktur</span>
                 <span>**Format**: JSON</span>
                 <span>**Periode**: Terbaru</span>
+                <span>**Update**: 2024-09-01</span>
             </div>
             <a href="data_fasilitas_umum_kalitengah.json" class="download-link" download>Download Data (JSON)</a>
+            <h4 style="margin-top: 20px;">Pratinjau (JSON)</h4>
+            <pre style="max-height: 200px; overflow-y: scroll;">
+{
+  "info": {
+    "nama_desa": "Desa Kalitengah",
+    "tahun_data": 2024
+  },
+  "fasilitas": [
+    {
+      "id": "FAS-001",
+      "nama_fasilitas": "Kantor Desa Kalitengah",
+      "kategori": "Pemerintahan",
+      "dusun": "Krajan",
+      "lokasi": {
+        "alamat": "Jl. Raya Kalitengah No. 1",
+        "latitude": -7.12345,
+        "longitude": 110.12345
+      },
+      "kapasitas_rawat_inap": 350
+    },
+    // ... dan 4 data lainnya
+  ]
+}
+            </pre>
         </section>
 
         <section class="dataset">
-            <h2 class="dataset-title">Data anggaran Desa Kalitengah</h2>
-            <p>Deskripsi singkat data: Data ini berisi anggaran Desa kalitengah.</p>
+            <h2 class="dataset-title">Data Anggaran Desa Kalitengah</h2>
+            <p>Deskripsi singkat data: Data ini berisi anggaran pendapatan dan belanja desa (APBDes) tahun 2024.</p>
             <div class="metadata">
                 <span>**Kategori**: Keuangan</span>
                 <span>**Format**: CSV</span>
                 <span>**Periode**: 2024</span>
+                <span>**Update**: 2024-09-01</span>
             </div>
             <a href="data_anggaran_desa_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
+            
+            <h4 style="margin-top: 20px;">Pratinjau (6 Baris Pertama)</h4>
+            <div id="preview-anggaran" class="preview-table"></div>
+
+            <pre class="raw-csv-data" id="csv-anggaran" style="display:none;">
+bidang,kegiatan,anggaran_rp,realisasi_rp,persentase_realisasi
+Penyelenggaraan Pemerintahan Desa,Operasional Kantor Desa,150000000,145000000,96.67
+Penyelenggaraan Pemerintahan Desa,Tunjangan Aparatur Desa,300000000,300000000,100.00
+Pelaksanaan Pembangunan Desa,Pembangunan Jalan Dusun Gebang,250000000,250000000,100.00
+Pelaksanaan Pembangunan Desa,Pembangunan Drainase Dusun Sawahan,120000000,115000000,95.83
+Pelaksanaan Pembangunan Desa,Operasional Posyandu,40000000,40000000,100.00
+Pembinaan Kemasyarakatan,Pelatihan PKK,25000000,24500000,98.00
+            </pre>
         </section>
         
         <section class="dataset">
-            <h2 class="dataset-title">Data bantuan sosial Desa Kalitengah</h2>
-            <p>Deskripsi singkat data: Data ini berisi bantuan sosial Desa kalitengah.</p>
+            <h2 class="dataset-title">Data Bantuan Sosial Desa Kalitengah</h2>
+            <p>Deskripsi singkat data: Data ini berisi rekapitulasi jumlah penerima bantuan sosial per program tahun 2024.</p>
             <div class="metadata">
                 <span>**Kategori**: Kesejahteraan Sosial</span>
                 <span>**Format**: CSV</span>
                 <span>**Periode**: 2024</span>
+                <span>**Update**: 2024-09-01</span>
             </div>
             <a href="data_bantuan_sosial_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
+
+            <h4 style="margin-top: 20px;">Pratinjau (6 Baris Pertama)</h4>
+            <div id="preview-bantuan" class="preview-table"></div>
+
+            <pre class="raw-csv-data" id="csv-bantuan" style="display:none;">
+nama_program_bantuan,sumber_dana,sasaran,jumlah_penerima_kk
+Bantuan Pangan Non-Tunai (BPNT),Kemensos RI,Keluarga Kurang Mampu,210
+Program Keluarga Harapan (PKH),Kemensos RI,Keluarga Sangat Kurang Mampu,130
+Bantuan Langsung Tunai - Dana Desa (BLT-DD),Dana Desa,Keluarga Miskin Ekstrem,85
+Bantuan Perbaikan Rumah Tidak Layak Huni (RTLH),APBD Kabupaten,Keluarga Kurang Mampu,15
+Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
+            </pre>
         </section>
+
     </main>
 
     <footer>
-        <p>copyright © 2025 Kalitengah Digital Service</p>
+        <p>Website ini dibuat menggunakan GitHub Pages.</p>
     </footer>
 
     <script>
+    
+    // FUNGSI 1: FILTER/SEARCH DATASET
     function filterData() {
-        // 1. Dapatkan teks yang diketik di kotak search (dan ubah jadi huruf besar)
         var input = document.getElementById('searchInput');
         var filter = input.value.toUpperCase();
-
-        // 2. Dapatkan semua "kartu" dataset
         var main = document.getElementById('main');
         var cards = main.getElementsByClassName('dataset');
 
-        // 3. Loop (ulangi) untuk setiap kartu
         for (var i = 0; i < cards.length; i++) {
-            // 4. Ambil judul (h2) dari dalam kartu
             var title = cards[i].getElementsByTagName('h2')[0];
             if (title) {
                 var txtValue = title.textContent || title.innerText;
                 
-                // 5. Cek apakah judul kartu mengandung teks yang dicari
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    // Jika cocok, tampilkan kartu
                     cards[i].style.display = "";
                 } else {
-                    // Jika tidak cocok, sembunyikan kartu
                     cards[i].style.display = "none";
                 }
             }
         }
     }
+    
+    // FUNGSI 2: KONVERTER CSV KE TABEL HTML
+    function generatePreview(csvElementId, outputElementId, maxRows) {
+        const csvElement = document.getElementById(csvElementId);
+        const outputElement = document.getElementById(outputElementId);
+
+        if (!csvElement || !outputElement) return;
+
+        const csvData = csvElement.textContent.trim();
+        const rows = csvData.split('\n');
+        
+        // Batasi baris yang ditampilkan (1 baris header + sisa data)
+        const previewRows = rows.slice(0, maxRows);
+        
+        let html = '<table>';
+        
+        // Buat Header (baris pertama)
+        const headers = previewRows[0].split(',');
+        html += '<thead><tr>';
+        headers.forEach(header => {
+            html += `<th>${header.trim()}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        // Buat Data (mulai dari baris kedua)
+        for (let i = 1; i < previewRows.length; i++) {
+            const columns = previewRows[i].split(',');
+            html += '<tr>';
+            columns.forEach(column => {
+                html += `<td>${column.trim()}</td>`;
+            });
+            html += '</tr>';
+        }
+
+        html += '</tbody></table>';
+        outputElement.innerHTML = html;
+    }
+
+    // FUNGSI 3: EKSEKUSI SAAT HALAMAN DIMUAT
+    window.onload = function() {
+        // Jalankan Pratinjau untuk setiap dataset CSV
+        generatePreview('csv-kependudukan', 'preview-kependudukan', 6); 
+        generatePreview('csv-anggaran', 'preview-anggaran', 7); // 1 header + 6 data
+        generatePreview('csv-bantuan', 'preview-bantuan', 6); // 1 header + 5 data
+        
+        // Jalankan filter data (hanya jika ada teks yang tersisa di kotak search)
+        if (document.getElementById('searchInput').value) {
+            filterData(); 
+        }
+    };
     </script>
-    </body>
+
+</body>
 </html>
