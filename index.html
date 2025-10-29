@@ -120,15 +120,26 @@
         }
 
         .preview-table {
-            order: 1; /* Tabel di atas (default/mobile) */
+            order: 1; 
+            /* Mengatur agar tabel tetap berada di dalam viewport */
+            overflow-x: auto; 
             flex-basis: 100%;
         }
 
+        /* Container Grafik (PENTING: Menjaga Rasio dan Proporsionalitas) */
         .chart-container {
-            order: 2; /* Grafik di bawah (default/mobile) */
+            order: 2; 
             flex-basis: 100%;
-            display: flex; /* Untuk menengahkan grafik di dalam containernya */
+            display: flex; 
             justify-content: center;
+        }
+
+        /* Wrapper Grafik untuk Mengatur Ukuran Maksimal */
+        .chart-wrapper {
+            max-width: 400px; /* Maksimal lebar untuk grafik */
+            width: 100%;
+            position: relative; /* Diperlukan untuk Chart.js responsive */
+            height: 300px; /* Tinggi tetap untuk grafik Bar/Donut */
         }
         
         /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
@@ -137,12 +148,18 @@
                 flex-direction: row; 
             }
             .preview-table {
-                flex-basis: 65%; /* Tabel lebih lebar */
-                order: 1; /* Tabel tetap di kiri */
+                /* BARU: Tabel mengambil 60% ruang */
+                flex-basis: 60%; 
+                order: 1; 
             }
             .chart-container {
-                flex-basis: 35%; /* Grafik lebih sempit */
-                order: 2; /* Grafik di kanan */
+                /* BARU: Grafik mengambil 40% ruang */
+                flex-basis: 40%; 
+                order: 2; 
+            }
+            .chart-wrapper {
+                 /* Pada desktop, biarkan lebar penuh di dalam 40% container */
+                 max-width: 100%;
             }
         }
 
@@ -151,8 +168,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            overflow-x: auto; 
-            display: block;
+            
+            /* Hapus display: block di sini agar tabel ikut flex-basis */
         }
         .preview-table th, .preview-table td {
             border: 1px solid #ddd;
@@ -261,7 +278,7 @@
                     <div id="preview-kependudukan" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div style="max-width: 350px;">
+                        <div class="chart-wrapper">
                             <h4 style="margin-top: 0; text-align: center;">Grafik Total Penduduk</h4>
                             <canvas id="chart-kependudukan"></canvas>
                         </div>
@@ -334,7 +351,7 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
                     <div id="preview-anggaran" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div style="max-width: 300px;">
+                        <div class="chart-wrapper">
                             <h4 style="margin-top: 0; text-align: center;">Proporsi Anggaran</h4>
                             <canvas id="chart-anggaran"></canvas>
                         </div>
@@ -374,7 +391,7 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
                     <div id="preview-bantuan" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div style="max-width: 300px;">
+                        <div class="chart-wrapper">
                             <h4 style="margin-top: 0; text-align: center;">Proporsi Penerima Bantuan</h4>
                             <canvas id="chart-bantuan"></canvas>
                         </div>
@@ -414,7 +431,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         var main = document.getElementById('main');
         var cards = main.getElementsByClassName('dataset');
         
-        // Nonaktifkan tombol kategori saat melakukan pencarian
         const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
         for (let i = 0; i < buttons.length; i++) {
              buttons[i].classList.remove('active');
@@ -541,6 +557,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         const processedData = processPopulationData();
         if (!processedData) return;
 
+        // Penting: Pastikan canvas ada sebelum mencoba mendapatkan konteks
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
         if (populationChart) {
@@ -643,6 +660,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
                 plugins: {
                     legend: {
                         position: 'top',
@@ -725,6 +743,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
                 plugins: {
                     legend: {
                         position: 'top',
