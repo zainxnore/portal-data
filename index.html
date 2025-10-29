@@ -180,13 +180,14 @@
         @media (min-width: 600px) {
             .preview-content {
                 flex-direction: row; 
-                align-items: flex-start; /* Menggunakan align-items: flex-start */
+                /* Biarkan align-items default (stretch) agar tinggi container ikut tabel */
+                align-items: stretch; /* <-- PENTING: Untuk menyinkronkan tinggi */
             }
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
                 min-width: 0; 
-                height: auto; 
+                /* Hapus height: auto; agar tingginya diatur oleh flex container */
             }
             .preview-table table {
                 flex-shrink: 0; 
@@ -198,18 +199,24 @@
                 flex-basis: 40%; 
                 order: 2; 
                 min-width: 0; 
-                height: auto; 
+                /* KUNCI: Membuat container grafik mengisi tinggi yang tersisa (yaitu tinggi tabel) */
+                flex-grow: 1; 
+                display: flex;
+                flex-direction: column; /* Mengatur item di dalamnya (wrapper) secara vertikal */
+                justify-content: flex-start; /* Grafik mulai dari atas */
+                height: 100%; /* Agar tinggi diwarisi dari .preview-content yang di-stretch */
             }
             
-            /* Rasio aspek 115% agar sedikit lebih besar dari kotak */
+            /* KUNCI PERBAIKAN: Hapus padding-bottom dan atur tinggi eksplisit */
             .chart-wrapper {
                  max-width: 100%;
-                 height: 0;
-                 padding-bottom: 115%; 
                  width: 100%; 
+                 height: 100%; /* Agar wrapper mengambil tinggi penuh dari container-nya (.chart-container) */
+                 padding-bottom: 0; /* Hapus rasio aspek statis */
             }
             
             .chart-wrapper canvas {
+                /* Gunakan maintainAspectRatio: false di JS untuk memastikan canvas mengisi wrapper 100% */
                 height: 100%;
             }
         }
@@ -414,7 +421,7 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-bantuan', 'csv-bantuan', 'preview-bantuan', 6)">Lihat Pratinjau</button>
             
             <div id="preview-container-bantuan" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;'>Pratinjau Data (6 Baris Pertama)</h4>
 
                 <div class="preview-content">
                     <div id="preview-bantuan" class="preview-table"></div>
@@ -616,7 +623,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, 
+                maintainAspectRatio: false, /* PENTING: Untuk memastikan grafik mengisi tinggi 100% dari wrapper */
                 scales: {
                     y: {
                         beginAtZero: true
@@ -841,9 +848,10 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
             
-            if (populationChart) populationChart.destroy();
-            if (anggaranChart) anggaranChart.destroy();
-            if (bantuanChart) bantuanChart.destroy();
+            // Hapus instance chart saat ditutup
+            if (populationChart) { populationChart.destroy(); populationChart = null; }
+            if (anggaranChart) { anggaranChart.destroy(); anggaranChart = null; }
+            if (bantuanChart) { bantuanChart.destroy(); bantuanChart = null; }
             
         } else {
             const previewElement = document.getElementById(previewId);
