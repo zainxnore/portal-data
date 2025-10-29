@@ -72,7 +72,7 @@
             margin-top: 10px;
             border-top: 1px dashed #eee;
             padding-top: 10px;
-            margin-bottom: 10px; /* Tambahkan jarak */
+            margin-bottom: 10px;
         }
         .metadata span {
             display: inline-block;
@@ -93,14 +93,14 @@
         /* CSS untuk Tombol Preview */
         .preview-button {
             display: inline-block;
-            background-color: #0366d6; /* Warna biru seperti nav */
+            background-color: #0366d6;
             color: white;
             padding: 10px 15px;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
             margin-top: 10px;
-            cursor: pointer; /* Ubah kursor jadi tangan */
+            cursor: pointer;
             border: none;
         }
         
@@ -211,37 +211,29 @@ Dusun Sawahan,> 55 Tahun,50,60,110
 
         <section class="dataset">
             <h2 class="dataset-title">Data Fasilitas Umum</h2>
-            <p>Deskripsi singkat data: Data ini berisi lokasi koordinat beberapa fasilitas umum di Desa Kalitengah.</p>
+            <p>Deskripsi singkat data: Data ini berisi lokasi koordinat beberapa fasilitas umum di Desa Kalitengah dalam format tabel datar.</p>
             <div class="metadata">
                 <span>**Kategori**: Infrastruktur</span>
-                <span>**Format**: JSON</span>
+                <span>**Format**: CSV</span>
                 <span>**Periode**: Terbaru</span>
                 <span>**Update**: 2024-09-01</span>
             </div>
-            <a href="data_fasilitas_umum_kalitengah.json" class="download-link" download>Download Data (JSON)</a>
             
-            <h4 style="margin-top: 20px;">Pratinjau (JSON)</h4>
-            <pre style="max-height: 200px; overflow-y: scroll;">
-{
-  "info": {
-    "nama_desa": "Desa Kalitengah",
-    "tahun_data": 2024
-  },
-  "fasilitas": [
-    {
-      "id": "FAS-001",
-      "nama_fasilitas": "Kantor Desa Kalitengah",
-      "kategori": "Pemerintahan",
-      "dusun": "Krajan",
-      "lokasi": {
-        "alamat": "Jl. Raya Kalitengah No. 1",
-        "latitude": -7.12345,
-        "longitude": 110.12345
-      }
-    },
-    // ... data lainnya
-  ]
-}
+            <a href="data_fasilitas_umum_kalitengah.csv" class="download-link" download>Download Data (CSV)</a>
+            <button class="preview-button" onclick="togglePreview(this, 'preview-container-fasilitas', 'csv-fasilitas', 'preview-fasilitas', 6)">Lihat Pratinjau</button>
+            
+            <div id="preview-container-fasilitas" class="preview-container">
+                <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
+                <div id="preview-fasilitas" class="preview-table"></div>
+            </div>
+
+            <pre class="raw-csv-data" id="csv-fasilitas" style="display:none;">
+id,nama_fasilitas,kategori,dusun,alamat,latitude,longitude
+FAS-001,Kantor Desa Kalitengah,Pemerintahan,Krajan,Jl. Raya Kalitengah No. 1,-7.12345,110.12345
+FAS-002,SD Negeri Kalitengah 1,Pendidikan,Krajan,Jl. Pendidikan No. 10,-7.124,110.124
+FAS-003,Posyandu Mekar Jaya,Kesehatan,Gebang,Jl. Sehat No. 5,-7.1255,110.1255
+FAS-004,Masjid Jami' Al-Hidayah,Tempat Ibadah,Sawahan,Jl. Ibadah No. 1,-7.126,110.126
+FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.123
             </pre>
         </section>
 
@@ -311,7 +303,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
     <script>
     
-    // FUNGSI 1: FILTER/SEARCH DATASET (TIDAK BERUBAH)
+    // FUNGSI 1: FILTER/SEARCH DATASET
     function filterData() {
         var input = document.getElementById('searchInput');
         var filter = input.value.toUpperCase();
@@ -332,7 +324,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         }
     }
     
-    // FUNGSI 2: KONVERTER CSV KE TABEL HTML (TIDAK BERUBAH)
+    // FUNGSI 2: KONVERTER CSV KE TABEL HTML
     function generatePreview(csvElementId, outputElementId, maxRows) {
         const csvElement = document.getElementById(csvElementId);
         const outputElement = document.getElementById(outputElementId);
