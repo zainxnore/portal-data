@@ -139,7 +139,7 @@
             max-width: 400px; /* Maksimal lebar untuk grafik */
             width: 100%;
             position: relative; /* Diperlukan untuk Chart.js responsive */
-            height: 280px; /* DIUBAH: Tinggi sedikit dikecilkan */
+            height: 280px; /* Tinggi sedikit dikecilkan */
         }
         
         /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
@@ -233,7 +233,6 @@
     <nav>
         <ul>
             <li><a href="index.html">Beranda</a></li>
-            <li><a href="index.html#main">Semua Data</a></li>
             <li><a href="tentang.html">Tentang</a></li>
             <li><a href="kontak.html">Kontak</a></li>
         </ul>
@@ -268,10 +267,10 @@
             </div>
             
             <a href="data_kependudukan_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
-            <button class="preview-button" onclick="togglePreview(this, 'preview-container-kependudukan', 'csv-kependudukan', 'preview-kependudukan', 6)">Lihat Pratinjau</button>
+            <button class="preview-button" onclick="togglePreview(this, 'preview-container-kependudukan', 'csv-kependudukan', 'preview-kependudukan', 6)">Lihat Preview</button>
             
             <div id="preview-container-kependudukan" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Preview Data (6 Baris Pertama)</h4>
                 
                 <div class="preview-content">
                     <div id="preview-kependudukan" class="preview-table"></div>
@@ -312,10 +311,10 @@ Dusun Sawahan,> 55 Tahun,50,60,110
             </div>
             
             <a href="data_fasilitas_umum_kalitengah.csv" class="download-link" download>Download Data (CSV)</a>
-            <button class="preview-button" onclick="togglePreview(this, 'preview-container-fasilitas', 'csv-fasilitas', 'preview-fasilitas', 6)">Lihat Pratinjau</button>
+            <button class="preview-button" onclick="togglePreview(this, 'preview-container-fasilitas', 'csv-fasilitas', 'preview-fasilitas', 6)">Lihat Preview</button>
             
             <div id="preview-container-fasilitas" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Preview (6 Baris Pertama)</h4>
                 <div id="preview-fasilitas" class="preview-table"></div>
             </div>
 
@@ -340,10 +339,10 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
             </div>
             
             <a href="data_anggaran_desa_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
-            <button class="preview-button" onclick="togglePreview(this, 'preview-container-anggaran', 'csv-anggaran', 'preview-anggaran', 7)">Lihat Pratinjau</button>
+            <button class="preview-button" onclick="togglePreview(this, 'preview-container-anggaran', 'csv-anggaran', 'preview-anggaran', 7)">Lihat Preview</button>
             
             <div id="preview-container-anggaran" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau Data (7 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Preview Data (7 Baris Pertama)</h4>
                 
                 <div class="preview-content">
                     <div id="preview-anggaran" class="preview-table"></div>
@@ -379,10 +378,10 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
             </div>
             
             <a href="data_bantuan_sosial_kalitengah_2024.csv" class="download-link" download>Download Data (CSV)</a>
-            <button class="preview-button" onclick="togglePreview(this, 'preview-container-bantuan', 'csv-bantuan', 'preview-bantuan', 6)">Lihat Pratinjau</button>
+            <button class="preview-button" onclick="togglePreview(this, 'preview-container-bantuan', 'csv-bantuan', 'preview-bantuan', 6)">Lihat Preview</button>
             
             <div id="preview-container-bantuan" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Preview Data (6 Baris Pertama)</h4>
 
                 <div class="preview-content">
                     <div id="preview-bantuan" class="preview-table"></div>
@@ -795,7 +794,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         // LOGIKA MENYEMBUNYIKAN
         if (container.style.display === 'block') {
             container.style.display = 'none';
-            button.textContent = 'Lihat Pratinjau';
+            button.textContent = 'Lihat Preview'; // UBAH: "Pratinjau" menjadi "Preview"
             
             // Hapus instance chart saat ditutup agar memori dibersihkan
             if (populationChart) { populationChart.destroy(); populationChart = null; }
@@ -834,7 +833,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 previewContent.style.display = 'flex';
             }
 
-            button.textContent = 'Sembunyikan Pratinjau';
+            button.textContent = 'Sembunyikan Preview'; // UBAH: "Pratinjau" menjadi "Preview"
         }
     }
 
