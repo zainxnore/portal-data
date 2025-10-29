@@ -126,6 +126,9 @@
             flex-basis: 100%;
             min-width: 0; 
             min-height: 0;
+            /* BARU: Memastikan konten tabel ikut menentukan tinggi */
+            display: flex; 
+            flex-direction: column;
         }
 
         /* Styling Tabel */
@@ -155,6 +158,8 @@
             align-items: center; 
             min-width: 0; 
             min-height: 0;
+            /* BARU: Memungkinkan container grafik mengisi sisa ruang */
+            flex-grow: 1; 
         }
 
         /* Wrapper Grafik untuk Mengontrol Rasio Aspek pada Mobile */
@@ -162,7 +167,7 @@
             max-width: 400px; 
             width: 100%;
             position: relative; 
-            padding-bottom: 100%; 
+            padding-bottom: 100%; /* Rasio 1:1 di mobile */
             height: 0; 
         }
 
@@ -177,32 +182,37 @@
         @media (min-width: 600px) {
             .preview-content {
                 flex-direction: row; 
-                align-items: stretch; 
+                align-items: stretch; /* Membuat tinggi Flex item sama rata */
             }
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
                 min-width: 0; 
-                display: flex; 
-                flex-direction: column;
                 height: 100%; 
+                /* TIDAK PERLU lagi display:flex di sini karena sudah didefinisikan di atas */
             }
             .preview-table table {
                 flex-shrink: 0; 
                 width: max-content; 
                 margin-top: 0; 
             }
+            /* Kunci agar Chart Container mengisi penuh tinggi tabel */
             .chart-container {
                 flex-basis: 40%; 
                 order: 2; 
                 min-width: 0; 
-                height: auto; 
+                height: 100%; /* KUNCI: Membuat tinggi 100% dari .preview-content */
             }
+            /* KUNCI PERBAIKAN: Hapus padding-bottom dan gunakan height:100% */
             .chart-wrapper {
                  max-width: 100%;
-                 /* UKURAN LEBIH BESAR: 90% (Hampir kotak) */
-                 padding-bottom: 90%; 
-                 height: 0; 
+                 padding-bottom: 0; /* Hapus rasio aspek di desktop */
+                 height: 100%; /* KUNCI: Memaksa wrapper mengisi tinggi chart-container */
+                 width: 100%; /* Memastikan lebar penuh */
+            }
+            /* BARU: Memastikan canvas mengisi wrapper 100% dari tingginya */
+            .chart-wrapper canvas {
+                height: 100%;
             }
         }
 
@@ -525,12 +535,17 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         // Buat Data
         for (let i = 1; i < previewRows.length; i++) {
-            const columns = previewRows[i].split(',');
-            html += '<tr>';
-            columns.forEach(column => {
-                html += `<td>${column.trim()}</td>`;
-            });
-            html += '</tr>';
+            const columns = rows[i].split(','); // Gunakan 'rows[i]' untuk memastikan data lengkap
+            
+            // Cek apakah baris ke-i ada di previewRows, jika ya tampilkan
+            if (i < maxRows) { 
+                html += '<tr>';
+                // Gunakan columns.length (dari baris lengkap)
+                for (let j = 0; j < headers.length; j++) { 
+                    html += `<td>${columns[j] ? columns[j].trim() : ''}</td>`;
+                }
+                html += '</tr>';
+            }
         }
 
         html += '</tbody></table>';
@@ -609,6 +624,16 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 scales: {
                     y: {
                         beginAtZero: true
+                    },
+                    x: {
+                        // KUNCI: Pindahkan label X ke bagian bawah area grafik
+                         position: 'bottom', 
+                    }
+                },
+                layout: {
+                    // Beri sedikit ruang agar label X tidak terpotong
+                    padding: {
+                        bottom: 0 
                     }
                 },
                 plugins: {
@@ -818,11 +843,10 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
-        if (container.style.display === 'block') { // Cek apakah sedang ditampilkan (block)
+        if (container.style.display === 'block') { 
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
             
-            // Hancurkan grafik agar tidak mengganggu inisiasi ulang
             if (populationChart) populationChart.destroy();
             if (anggaranChart) anggaranChart.destroy();
             if (bantuanChart) bantuanChart.destroy();
@@ -834,7 +858,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 generatePreview(csvId, previewId, maxRows);
             }
             
-            // Render grafik hanya jika ada elemen canvas
             if (csvId === 'csv-kependudukan' && document.getElementById('chart-kependudukan')) {
                 renderPopulationChart();
             }
@@ -847,10 +870,8 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 renderBantuanChart();
             }
             
-            // Menampilkan container pratinjau
             container.style.display = 'block'; 
 
-            // Memaksa preview-content menjadi flex
             const previewContent = container.querySelector('.preview-content');
             if (previewContent) {
                 previewContent.style.display = 'flex';
@@ -862,7 +883,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
     // FUNGSI 11: EKSEKUSI SAAT HALAMAN DIMUAT
     window.onload = function() {
-        // Hanya untuk memastikan fungsi filter data berjalan saat dimuat
         if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
             filterData(); 
         }
