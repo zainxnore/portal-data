@@ -139,7 +139,7 @@
             max-width: 400px; /* Maksimal lebar untuk grafik */
             width: 100%;
             position: relative; /* Diperlukan untuk Chart.js responsive */
-            height: 300px; /* Tinggi tetap untuk grafik Bar/Donut */
+            height: 280px; /* DIUBAH: Tinggi sedikit dikecilkan */
         }
         
         /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
@@ -148,18 +148,19 @@
                 flex-direction: row; 
             }
             .preview-table {
-                /* BARU: Tabel mengambil 60% ruang */
+                /* Tabel mengambil 60% ruang */
                 flex-basis: 60%; 
                 order: 1; 
             }
             .chart-container {
-                /* BARU: Grafik mengambil 40% ruang */
+                /* Grafik mengambil 40% ruang */
                 flex-basis: 40%; 
                 order: 2; 
             }
             .chart-wrapper {
-                 /* Pada desktop, biarkan lebar penuh di dalam 40% container */
-                 max-width: 100%;
+                /* Pada desktop, biarkan lebar penuh di dalam 40% container */
+                max-width: 100%;
+                height: 280px; /* Pertahankan tinggi yang sama */
             }
         }
 
@@ -168,8 +169,6 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            
-            /* Hapus display: block di sini agar tabel ikut flex-basis */
         }
         .preview-table th, .preview-table td {
             border: 1px solid #ddd;
@@ -279,7 +278,6 @@
                     
                     <div class="chart-container">
                         <div class="chart-wrapper">
-                            <h4 style="margin-top: 0; text-align: center;">Grafik Total Penduduk</h4>
                             <canvas id="chart-kependudukan"></canvas>
                         </div>
                     </div>
@@ -352,7 +350,6 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
                     
                     <div class="chart-container">
                         <div class="chart-wrapper">
-                            <h4 style="margin-top: 0; text-align: center;">Proporsi Anggaran</h4>
                             <canvas id="chart-anggaran"></canvas>
                         </div>
                     </div>
@@ -392,7 +389,6 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
                     
                     <div class="chart-container">
                         <div class="chart-wrapper">
-                            <h4 style="margin-top: 0; text-align: center;">Proporsi Penerima Bantuan</h4>
                             <canvas id="chart-bantuan"></canvas>
                         </div>
                     </div>
@@ -557,7 +553,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         const processedData = processPopulationData();
         if (!processedData) return;
 
-        // Penting: Pastikan canvas ada sebelum mencoba mendapatkan konteks
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
         if (populationChart) {
@@ -591,6 +586,18 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                     y: {
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    legend: {
+                        display: false 
+                    },
+                    title: { // JUDUL DITAMBAHKAN VIA CHART.JS
+                        display: true,
+                        text: 'Grafik Total Penduduk per Dusun', 
+                        font: {
+                            size: 14
+                        }
+                    }
                 }
             }
         });
@@ -614,7 +621,8 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         for (let i = 1; i < rows.length; i++) {
             const columns = rows[i].split(',');
             const bidang = columns[bidangIndex].trim();
-            const anggaran = parseInt(columns[anggaranIndex].trim().replace(/\D/g,''));
+            // Perlu membersihkan angka dari non-digit sebelum parse (untuk angka format IDR)
+            const anggaran = parseInt(columns[anggaranIndex].trim().replace(/\D/g,'')); 
 
             if (totals[bidang]) {
                 totals[bidang] += anggaran;
@@ -660,7 +668,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
+                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -676,6 +684,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                 label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
                                 return label;
                             }
+                        }
+                    },
+                    title: { // JUDUL DITAMBAHKAN VIA CHART.JS
+                        display: true,
+                        text: 'Proporsi Anggaran per Bidang', 
+                        font: {
+                            size: 14
                         }
                     }
                 }
@@ -743,7 +758,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
+                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -760,6 +775,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                 return label;
                             }
                         }
+                    },
+                    title: { // JUDUL DITAMBAHKAN VIA CHART.JS
+                        display: true,
+                        text: 'Proporsi Penerima Bantuan Sosial', 
+                        font: {
+                            size: 14
+                        }
                     }
                 }
             }
@@ -774,6 +796,11 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         if (container.style.display === 'block') {
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
+            
+            // Hapus instance chart saat ditutup agar memori dibersihkan
+            if (populationChart) { populationChart.destroy(); populationChart = null; }
+            if (anggaranChart) { anggaranChart.destroy(); anggaranChart = null; }
+            if (bantuanChart) { bantuanChart.destroy(); bantuanChart = null; }
             
         } else {
             // LOGIKA MENAMPILKAN
@@ -800,6 +827,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             }
             
             container.style.display = 'block';
+            
+            // Memastikan konten preview tampil sebagai flex
+            const previewContent = container.querySelector('.preview-content');
+            if (previewContent) {
+                previewContent.style.display = 'flex';
+            }
+
             button.textContent = 'Sembunyikan Pratinjau';
         }
     }
