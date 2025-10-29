@@ -150,6 +150,31 @@
             box-sizing: border-box; 
             font-size: 16px;
         }
+
+        /* CSS BARU UNTUK FILTER KATEGORI */
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .category-filter button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .category-filter button:hover {
+            background-color: #e0e0e0;
+        }
+        .category-filter button.active {
+            background-color: #0366d6;
+            color: white;
+            border-color: #0366d6;
+        }
         
     </style>
 </head>
@@ -171,6 +196,14 @@
 
     <main id="main"> 
     
+        <h3 style="margin-bottom: 10px;">Filter Cepat Berdasarkan Kategori:</h3>
+        <div class="category-filter" id="categoryFilterButtons">
+            <button class="active" onclick="filterByCategory(this, 'SEMUA')">Semua Data</button>
+            <button onclick="filterByCategory(this, 'Demografi')">Demografi</button>
+            <button onclick="filterByCategory(this, 'Infrastruktur')">Infrastruktur</button>
+            <button onclick="filterByCategory(this, 'Keuangan')">Keuangan</button>
+            <button onclick="filterByCategory(this, 'Kesejahteraan Sosial')">Kesejahteraan Sosial</button>
+        </div>
         <label for="searchInput" style="font-size: 1.2em; font-weight: bold; color: #333;">Cari Dataset:</label>
         <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik nama data, misal: 'penduduk' atau 'anggaran'...">
 
@@ -298,7 +331,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     </main>
 
     <footer>
-        <p>copyright © 2025 Kalitengah Digital Service</p>
+        <p>Website ini dibuat menggunakan GitHub Pages.</p>
     </footer>
 
     <script>
@@ -309,11 +342,18 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         var filter = input.value.toUpperCase();
         var main = document.getElementById('main');
         var cards = main.getElementsByClassName('dataset');
+        
+        // Nonaktifkan tombol kategori (agar tidak bentrok dengan hasil search)
+        const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
+        for (let i = 0; i < buttons.length; i++) {
+             buttons[i].classList.remove('active');
+        }
 
         for (var i = 0; i < cards.length; i++) {
             var title = cards[i].getElementsByTagName('h2')[0];
             if (title) {
-                var txtValue = title.textContent || title.innerText;
+                // Cari di Judul, Deskripsi, dan Metadata
+                var txtValue = cards[i].textContent || cards[i].innerText;
                 
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
                     cards[i].style.display = "";
@@ -323,8 +363,45 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             }
         }
     }
+
+    // FUNGSI 2: FILTER BERDASARKAN KATEGORI (BARU)
+    function filterByCategory(buttonElement, category) {
+        const main = document.getElementById('main');
+        const cards = main.getElementsByClassName('dataset');
+        const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
+
+        // 1. Kelola Status Tombol (Active/Non-active)
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        buttonElement.classList.add('active');
+        
+        // 2. Kosongkan kotak pencarian
+        document.getElementById('searchInput').value = '';
+
+        // 3. Lakukan Filtering
+        for (let i = 0; i < cards.length; i++) {
+            const dataset = cards[i];
+            // Ambil elemen span yang berisi Kategori (Span anak pertama dari div metadata)
+            const categorySpan = dataset.querySelector('.metadata span:nth-child(1)'); 
+            
+            if (category === 'SEMUA') {
+                // Jika memilih 'Semua Data', tampilkan semua
+                dataset.style.display = "";
+            } else if (categorySpan) {
+                // Ambil teks kategori (misal: "Demografi")
+                const categoryText = categorySpan.textContent.split(':').pop().trim();
+
+                if (categoryText === category) {
+                    dataset.style.display = "";
+                } else {
+                    dataset.style.display = "none";
+                }
+            }
+        }
+    }
     
-    // FUNGSI 2: KONVERTER CSV KE TABEL HTML
+    // FUNGSI 3: KONVERTER CSV KE TABEL HTML
     function generatePreview(csvElementId, outputElementId, maxRows) {
         const csvElement = document.getElementById(csvElementId);
         const outputElement = document.getElementById(outputElementId);
@@ -360,19 +437,16 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         outputElement.innerHTML = html;
     }
     
-    // FUNGSI 3: TOGGLE (Menampilkan/Menyembunyikan Pratinjau)
+    // FUNGSI 4: TOGGLE (Menampilkan/Menyembunyikan Pratinjau)
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
         if (container.style.display === 'block') {
-            // Jika sudah tampil, sembunyikan
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
         } else {
-            // Jika belum tampil, tampilkan
             const previewElement = document.getElementById(previewId);
             
-            // Cek apakah tabel sudah dibuat. Jika belum, buat dulu.
             if (previewElement.innerHTML.trim() === '') {
                 generatePreview(csvId, previewId, maxRows);
             }
@@ -382,9 +456,8 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         }
     }
 
-    // FUNGSI 4: EKSEKUSI SAAT HALAMAN DIMUAT (Hanya filter)
+    // FUNGSI 5: EKSEKUSI SAAT HALAMAN DIMUAT
     window.onload = function() {
-        // Hanya menjalankan filterData jika ada input di kotak search
         if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
             filterData(); 
         }
