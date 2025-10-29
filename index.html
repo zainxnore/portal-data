@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Open Data Desa Kalitengah</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obh+O+z/c=" crossorigin=""/>
+
     <style>
         /* CSS UTAMA */
         body {
@@ -261,7 +264,10 @@ Dusun Sawahan,> 55 Tahun,50,60,110
             <div id="preview-container-fasilitas" class="preview-container">
                 <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
                 <div id="preview-fasilitas" class="preview-table"></div>
-            </div>
+
+                <h4 style="margin-top: 25px;">Peta Lokasi Fasilitas Umum:</h4>
+                <div id="map-fasilitas" style="height: 350px; border-radius: 8px;"></div>
+                </div>
 
             <pre class="raw-csv-data" id="csv-fasilitas" style="display:none;">
 id,nama_fasilitas,kategori,dusun,alamat,latitude,longitude
@@ -289,7 +295,12 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
             <div id="preview-container-anggaran" class="preview-container">
                 <h4 style="margin-top: 0;">Pratinjau (7 Baris Pertama)</h4>
                 <div id="preview-anggaran" class="preview-table"></div>
-            </div>
+
+                <h4 style="margin-top: 25px;">Proporsi Anggaran per Bidang:</h4>
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <canvas id="chart-anggaran"></canvas>
+                </div>
+                </div>
 
             <pre class="raw-csv-data" id="csv-anggaran" style="display:none;">
 bidang,kegiatan,anggaran_rp,realisasi_rp,persentase_realisasi
@@ -339,8 +350,15 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script> 
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20n6a9c8z9G6yqU5B6J5B/L4Z0r2l0M0t6w/r4k6l6M=" crossorigin=""></script>
+    
     <script>
     
+    // VARIABEL GLOBAL UNTUK INSTANCE PETA DAN GRAFIK
+    let mapFasilitas = null;
+    let window.populationChart = null; // Didefinisikan di window agar bisa di-destroy
+    let window.anggaranChart = null;
+
     // FUNGSI 1: FILTER/SEARCH DATASET
     function filterData() {
         var input = document.getElementById('searchInput');
@@ -348,7 +366,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         var main = document.getElementById('main');
         var cards = main.getElementsByClassName('dataset');
         
-        // Nonaktifkan tombol kategori (agar tidak bentrok dengan hasil search)
+        // Nonaktifkan tombol kategori saat melakukan pencarian
         const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
         for (let i = 0; i < buttons.length; i++) {
              buttons[i].classList.remove('active');
@@ -357,7 +375,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         for (var i = 0; i < cards.length; i++) {
             var title = cards[i].getElementsByTagName('h2')[0];
             if (title) {
-                // Cari di Judul, Deskripsi, dan Metadata
                 var txtValue = cards[i].textContent || cards[i].innerText;
                 
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -375,16 +392,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         const cards = main.getElementsByClassName('dataset');
         const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
 
-        // 1. Kelola Status Tombol (Active/Non-active)
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].classList.remove('active');
         }
         buttonElement.classList.add('active');
         
-        // 2. Kosongkan kotak pencarian
         document.getElementById('searchInput').value = '';
 
-        // 3. Lakukan Filtering
         for (let i = 0; i < cards.length; i++) {
             const dataset = cards[i];
             const categorySpan = dataset.querySelector('.metadata span:nth-child(1)'); 
@@ -472,9 +486,8 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         };
     }
 
-    // FUNGSI 5: MENAMPILKAN GRAFIK
+    // FUNGSI 5: MENAMPILKAN GRAFIK PENDUDUK
     function renderPopulationChart() {
-        // Hanya render jika Chart.js sudah dimuat
         if (typeof Chart === 'undefined') return;
 
         const processedData = processPopulationData();
@@ -482,7 +495,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
-        // Hancurkan grafik lama jika ada (agar tidak tumpang tindih)
         if (window.populationChart) {
             window.populationChart.destroy();
         }
@@ -519,13 +531,183 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         });
     }
 
-    // FUNGSI 6: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
+    // FUNGSI 6: MEMPROSES DATA CSV ANGGARAN UNTUK CHART (GRAFIK DONAT)
+    function processAnggaranData() {
+        const csvElement = document.getElementById('csv-anggaran');
+        if (!csvElement) return null;
+
+        const csvData = csvElement.textContent.trim();
+        const rows = csvData.split('\n');
+        
+        const totals = {};
+        const header = rows[0].split(',').map(h => h.trim());
+        const anggaranIndex = header.indexOf('anggaran_rp'); 
+        const bidangIndex = header.indexOf('bidang'); 
+
+        if (anggaranIndex === -1 || bidangIndex === -1) return null;
+
+        for (let i = 1; i < rows.length; i++) {
+            const columns = rows[i].split(',');
+            const bidang = columns[bidangIndex].trim();
+            // Hapus karakter non-digit dan parse sebagai integer
+            const anggaran = parseInt(columns[anggaranIndex].trim().replace(/\D/g,''));
+
+            if (totals[bidang]) {
+                totals[bidang] += anggaran;
+            } else {
+                totals[bidang] = anggaran;
+            }
+        }
+        
+        return {
+            labels: Object.keys(totals),
+            data: Object.values(totals)
+        };
+    }
+
+    // FUNGSI 7: MENAMPILKAN GRAFIK DONAT ANGGARAN
+    function renderAnggaranChart() {
+        if (typeof Chart === 'undefined') return;
+
+        const processedData = processAnggaranData();
+        if (!processedData) return;
+
+        const ctx = document.getElementById('chart-anggaran').getContext('2d');
+        
+        if (window.anggaranChart) {
+            window.anggaranChart.destroy();
+        }
+        
+        window.anggaranChart = new Chart(ctx, {
+            type: 'doughnut', 
+            data: {
+                labels: processedData.labels, 
+                datasets: [{
+                    label: 'Total Anggaran (Rp)',
+                    data: processedData.data,
+                    backgroundColor: [
+                        '#0366d6', 
+                        '#28a745', 
+                        '#ffc107',
+                        '#dc3545'  
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                let value = context.parsed;
+                                // Format angka sebagai mata uang Rupiah
+                                label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Global variable untuk menyimpan instance peta
+    let mapFasilitas = null;
+
+    // FUNGSI 8: MEMPROSES DATA CSV FASILITAS UNTUK PETA
+    function processFasilitasData() {
+        const csvElement = document.getElementById('csv-fasilitas');
+        if (!csvElement) return [];
+
+        const csvData = csvElement.textContent.trim();
+        const rows = csvData.split('\n');
+        if (rows.length < 2) return [];
+
+        const header = rows[0].split(',').map(h => h.trim());
+        const latIndex = header.indexOf('latitude');
+        const lonIndex = header.indexOf('longitude');
+        const namaIndex = header.indexOf('nama_fasilitas');
+        const kategoriIndex = header.indexOf('kategori');
+        const alamatIndex = header.indexOf('alamat');
+
+        const markers = [];
+        for (let i = 1; i < rows.length; i++) {
+            const columns = rows[i].split(',');
+            const lat = parseFloat(columns[latIndex]?.trim());
+            const lon = parseFloat(columns[lonIndex]?.trim());
+
+            if (!isNaN(lat) && !isNaN(lon)) {
+                markers.push({
+                    lat: lat,
+                    lon: lon,
+                    nama: columns[namaIndex]?.trim(),
+                    kategori: columns[kategoriIndex]?.trim(),
+                    alamat: columns[alamatIndex]?.trim()
+                });
+            }
+        }
+        return markers;
+    }
+
+    // FUNGSI 9: MENAMPILKAN PETA LEAFLET
+    function renderFasilitasMap() {
+        if (typeof L === 'undefined') return;
+
+        const markerData = processFasilitasData();
+        
+        if (mapFasilitas) {
+            mapFasilitas.remove();
+            mapFasilitas = null;
+        }
+
+        const defaultLat = -7.1245; 
+        const defaultLon = 110.1245; 
+        const centerLat = markerData.length > 0 ? markerData[0].lat : defaultLat;
+        const centerLon = markerData.length > 0 ? markerData[0].lon : defaultLon;
+
+        mapFasilitas = L.map('map-fasilitas').setView([centerLat, centerLon], 14); 
+
+        // Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapFasilitas);
+
+        // Tambahkan Marker
+        markerData.forEach(item => {
+            const popupContent = `
+                <strong>${item.nama}</strong><br>
+                Kategori: ${item.kategori}<br>
+                Alamat: ${item.alamat}<br>
+                Koordinat: ${item.lat}, ${item.lon}
+            `;
+            L.marker([item.lat, item.lon])
+                .addTo(mapFasilitas)
+                .bindPopup(popupContent);
+        });
+    }
+
+    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau, Grafik, dan Peta)
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
         if (container.style.display === 'block') {
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
+            
+            // Hapus instance peta saat disembunyikan
+            if (csvId === 'csv-fasilitas' && mapFasilitas) {
+                mapFasilitas.remove();
+                mapFasilitas = null;
+            }
+
         } else {
             const previewElement = document.getElementById(previewId);
             
@@ -534,9 +716,22 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 generatePreview(csvId, previewId, maxRows);
             }
             
-            // 2. JIKA DATA KEPENDUDUKAN, RENDER GRAFIK
+            // 2. RENDER GRAFIK KEPENDUDUKAN
             if (csvId === 'csv-kependudukan') {
                 renderPopulationChart();
+            }
+            
+            // 3. RENDER GRAFIK ANGGARAN
+            if (csvId === 'csv-anggaran') {
+                renderAnggaranChart();
+            }
+
+            // 4. RENDER PETA
+            if (csvId === 'csv-fasilitas') {
+                container.style.display = 'block'; 
+                button.textContent = 'Sembunyikan Pratinjau';
+                renderFasilitasMap();
+                return; 
             }
             
             container.style.display = 'block';
@@ -544,7 +739,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         }
     }
 
-    // FUNGSI 7: EKSEKUSI SAAT HALAMAN DIMUAT
+    // FUNGSI 11: EKSEKUSI SAAT HALAMAN DIMUAT
     window.onload = function() {
         if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
             filterData(); 
