@@ -5,28 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Open Data Desa Kalitengah</title>
     <style>
-        /* === PERUBAHAN UTAMA DI SINI === */
-       body {
+        /* ... (Semua CSS Anda yang lama tetap di sini) ... */
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; /* Hapus margin auto dari body */
+            margin: 0;
             line-height: 1.6;
             background-color: #f9f9f9;
             color: #333;
-            padding: 0; /* Hapus padding dari body */
+            padding: 0;
         }
         nav {
             background-color: #0366d6;
             padding: 10px 0;
             margin-bottom: 20px;
-            /* Latar belakang <nav> sekarang akan full-width */
         }
         nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0 auto;
-            max-width: 800px; 
-            text-align: center; /* <-- UBAH BARIS INI */
-        }
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 800px; 
+            text-align: center;
+        }
         nav ul li {
             display: inline;
             margin: 0 15px;
@@ -41,21 +40,19 @@
             text-decoration: underline;
         }
         
-        /* Pindahkan batasan 800px ke elemen konten */
         header {
             text-align: center;
             border-bottom: 2px solid #eee;
-            padding: 40px 20px 20px 20px; /* Tambahkan padding di sini */
-            margin: 0 auto; /* Menengahkan header */
-            max-width: 800px; /* Batasi lebar header */
+            padding: 40px 20px 20px 20px;
+            margin: 0 auto;
+            max-width: 800px;
         }
         
         main {
-            margin: 20px auto; /* Menengahkan main */
-            max-width: 800px; /* Batasi lebar main */
-            padding: 0 20px; /* Tambahkan padding di sini */
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 0 20px;
         }
-        /* === Akhir Perubahan Utama === */
 
         .dataset {
             background-color: #fff;
@@ -82,15 +79,35 @@
         }
         .download-link {
             /* ... (tidak berubah) ... */
+             display: inline-block;
+             background-color: #28a745;
+             color: white;
+             padding: 10px 15px;
+             text-decoration: none;
+             border-radius: 5px;
+             font-weight: bold;
+             margin-top: 10px;
         }
         footer {
             text-align: center; 
             color: #777; 
-            padding: 20px; /* Sesuaikan padding */
+            padding: 20px;
             border-top: 1px solid #eee;
-            margin: 20px auto 0 auto; /* Menengahkan footer */
-            max-width: 800px; /* Batasi lebar footer */
+            margin: 20px auto 0 auto;
+            max-width: 800px;
         }
+
+        /* === 1. CSS BARU UNTUK KOTAK SEARCH === */
+        #searchInput {
+            width: 100%; /* Lebar penuh */
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 25px; /* Jarak ke dataset pertama */
+            box-sizing: border-box; /* Agar padding tidak merusak lebar */
+            font-size: 16px;
+        }
+        
     </style>
 </head>
 <body>
@@ -110,6 +127,10 @@
     </header>
 
     <main id="main"> 
+    
+        <label for="searchInput" style="font-size: 1.2em; font-weight: bold; color: #333;">Cari Dataset:</label>
+        <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Ketik nama data, misal: 'penduduk' atau 'anggaran'...">
+
         <section class="dataset">
             <h2 class="dataset-title">Data Penduduk</h2>
             <p>Deskripsi singkat data: Ini adalah data jumlah penduduk pada tahun 2024.</p>
@@ -159,5 +180,34 @@
         <p>Website ini dibuat menggunakan GitHub Pages.</p>
     </footer>
 
-</body>
+    <script>
+    function filterData() {
+        // 1. Dapatkan teks yang diketik di kotak search (dan ubah jadi huruf besar)
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toUpperCase();
+
+        // 2. Dapatkan semua "kartu" dataset
+        var main = document.getElementById('main');
+        var cards = main.getElementsByClassName('dataset');
+
+        // 3. Loop (ulangi) untuk setiap kartu
+        for (var i = 0; i < cards.length; i++) {
+            // 4. Ambil judul (h2) dari dalam kartu
+            var title = cards[i].getElementsByTagName('h2')[0];
+            if (title) {
+                var txtValue = title.textContent || title.innerText;
+                
+                // 5. Cek apakah judul kartu mengandung teks yang dicari
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    // Jika cocok, tampilkan kartu
+                    cards[i].style.display = "";
+                } else {
+                    // Jika tidak cocok, sembunyikan kartu
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    }
+    </script>
+    </body>
 </html>
