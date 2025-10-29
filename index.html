@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Open Data Desa Kalitengah</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obh+O+z/c=" crossorigin=""/>
-
     <style>
         /* CSS UTAMA */
         body {
@@ -107,7 +105,48 @@
             border: none;
         }
         
-        /* CSS BARU UNTUK PRATINJAU TABEL */
+        /* CSS PRATINJAU DENGAN FLEXBOX (KUNCI LAYOUT) */
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .preview-content {
+            display: flex;
+            flex-direction: column; /* Default: stack vertically on mobile */
+            gap: 20px;
+        }
+
+        .preview-table {
+            order: 1; /* Tabel di atas (default/mobile) */
+            flex-basis: 100%;
+        }
+
+        .chart-container {
+            order: 2; /* Grafik di bawah (default/mobile) */
+            flex-basis: 100%;
+            display: flex; /* Untuk menengahkan grafik di dalam containernya */
+            justify-content: center;
+        }
+        
+        /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
+        @media (min-width: 600px) {
+            .preview-content {
+                flex-direction: row; 
+            }
+            .preview-table {
+                flex-basis: 65%; /* Tabel lebih lebar */
+                order: 1; /* Tabel tetap di kiri */
+            }
+            .chart-container {
+                flex-basis: 35%; /* Grafik lebih sempit */
+                order: 2; /* Grafik di kanan */
+            }
+        }
+
+        /* Styling Tabel */
         .preview-table table {
             width: 100%;
             border-collapse: collapse;
@@ -124,14 +163,6 @@
         }
         .preview-table th {
             background-color: #f2f2f2;
-        }
-        
-        /* CSS untuk menyembunyikan kontainer pratinjau secara default */
-        .preview-container {
-            display: none;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px dashed #ddd;
         }
         
         footer {
@@ -224,12 +255,19 @@
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-kependudukan', 'csv-kependudukan', 'preview-kependudukan', 6)">Lihat Pratinjau</button>
             
             <div id="preview-container-kependudukan" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
-                <div id="preview-kependudukan" class="preview-table"></div>
+                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
                 
-                <h4 style="margin-top: 25px;">Grafik Total Penduduk per Dusun:</h4>
-                <canvas id="chart-kependudukan" style="max-height: 300px;"></canvas>
+                <div class="preview-content">
+                    <div id="preview-kependudukan" class="preview-table"></div>
+                    
+                    <div class="chart-container">
+                        <div style="max-width: 350px;">
+                            <h4 style="margin-top: 0; text-align: center;">Grafik Total Penduduk</h4>
+                            <canvas id="chart-kependudukan"></canvas>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
             <pre class="raw-csv-data" id="csv-kependudukan" style="display:none;">
 dusun,kelompok_usia,jumlah_laki_laki,jumlah_perempuan,total
@@ -250,7 +288,7 @@ Dusun Sawahan,> 55 Tahun,50,60,110
 
         <section class="dataset">
             <h2 class="dataset-title">Data Fasilitas Umum</h2>
-            <p>Deskripsi singkat data: Data ini berisi lokasi koordinat beberapa fasilitas umum di Desa Kalitengah dalam format tabel datar.</p>
+            <p>Deskripsi singkat data: Data ini berisi lokasi fasilitas umum di Desa Kalitengah (Data Lokasi Peta Dihapus).</p>
             <div class="metadata">
                 <span>**Kategori**: Infrastruktur</span>
                 <span>**Format**: CSV</span>
@@ -264,10 +302,7 @@ Dusun Sawahan,> 55 Tahun,50,60,110
             <div id="preview-container-fasilitas" class="preview-container">
                 <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
                 <div id="preview-fasilitas" class="preview-table"></div>
-
-                <h4 style="margin-top: 25px;">Peta Lokasi Fasilitas Umum:</h4>
-                <div id="map-fasilitas" style="height: 350px; border-radius: 8px;"></div>
-                </div>
+            </div>
 
             <pre class="raw-csv-data" id="csv-fasilitas" style="display:none;">
 id,nama_fasilitas,kategori,dusun,alamat,latitude,longitude
@@ -293,14 +328,19 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-anggaran', 'csv-anggaran', 'preview-anggaran', 7)">Lihat Pratinjau</button>
             
             <div id="preview-container-anggaran" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau (7 Baris Pertama)</h4>
-                <div id="preview-anggaran" class="preview-table"></div>
-
-                <h4 style="margin-top: 25px;">Proporsi Anggaran per Bidang:</h4>
-                <div style="max-width: 400px; margin: 0 auto;">
-                    <canvas id="chart-anggaran"></canvas>
+                <h4 style="margin-top: 0;">Pratinjau Data (7 Baris Pertama)</h4>
+                
+                <div class="preview-content">
+                    <div id="preview-anggaran" class="preview-table"></div>
+                    
+                    <div class="chart-container">
+                        <div style="max-width: 300px;">
+                            <h4 style="margin-top: 0; text-align: center;">Proporsi Anggaran</h4>
+                            <canvas id="chart-anggaran"></canvas>
+                        </div>
+                    </div>
                 </div>
-                </div>
+            </div>
 
             <pre class="raw-csv-data" id="csv-anggaran" style="display:none;">
 bidang,kegiatan,anggaran_rp,realisasi_rp,persentase_realisasi
@@ -328,8 +368,18 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-bantuan', 'csv-bantuan', 'preview-bantuan', 6)">Lihat Pratinjau</button>
             
             <div id="preview-container-bantuan" class="preview-container">
-                <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
-                <div id="preview-bantuan" class="preview-table"></div>
+                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
+
+                <div class="preview-content">
+                    <div id="preview-bantuan" class="preview-table"></div>
+                    
+                    <div class="chart-container">
+                        <div style="max-width: 300px;">
+                            <h4 style="margin-top: 0; text-align: center;">Proporsi Penerima Bantuan</h4>
+                            <canvas id="chart-bantuan"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <pre class="raw-csv-data" id="csv-bantuan" style="display:none;">
@@ -349,15 +399,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script> 
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20n6a9c8z9G6yqU5B6J5B/L4Z0r2l0M0t6w/r4k6l6M=" crossorigin=""></script>
     
     <script>
     
-    // VARIABEL GLOBAL UNTUK INSTANCE PETA DAN GRAFIK (DIKOREKSI: Menggunakan var)
-    var mapFasilitas = null;
+    // VARIABEL GLOBAL UNTUK INSTANCE GRAFIK
     var populationChart = null; 
     var anggaranChart = null; 
+    var bantuanChart = null; 
 
     // FUNGSI 1: FILTER/SEARCH DATASET
     function filterData() {
@@ -453,7 +501,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         outputElement.innerHTML = html;
     }
     
-    // FUNGSI 4: MEMPROSES DATA CSV PENDUDUK UNTUK CHART
+    // FUNGSI 4: MEMPROSES DATA CSV PENDUDUK UNTUK CHART (BAR CHART)
     function processPopulationData() {
         const csvElement = document.getElementById('csv-kependudukan');
         if (!csvElement) return null;
@@ -495,7 +543,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
-        // DIKOREKSI: Cek variabel global populationChart
         if (populationChart) {
             populationChart.destroy();
         }
@@ -532,7 +579,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         });
     }
 
-    // FUNGSI 6: MEMPROSES DATA CSV ANGGARAN UNTUK CHART (GRAFIK DONAT)
+    // FUNGSI 6: MEMPROSES DATA CSV ANGGARAN UNTUK CHART (DONUT CHART)
     function processAnggaranData() {
         const csvElement = document.getElementById('csv-anggaran');
         if (!csvElement) return null;
@@ -550,7 +597,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         for (let i = 1; i < rows.length; i++) {
             const columns = rows[i].split(',');
             const bidang = columns[bidangIndex].trim();
-            // Hapus karakter non-digit dan parse sebagai integer
             const anggaran = parseInt(columns[anggaranIndex].trim().replace(/\D/g,''));
 
             if (totals[bidang]) {
@@ -575,7 +621,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const ctx = document.getElementById('chart-anggaran').getContext('2d');
         
-        // DIKOREKSI: Cek variabel global anggaranChart
         if (anggaranChart) {
             anggaranChart.destroy();
         }
@@ -610,7 +655,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                     label += ': ';
                                 }
                                 let value = context.parsed;
-                                // Format angka sebagai mata uang Rupiah
                                 label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
                                 return label;
                             }
@@ -621,94 +665,99 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         });
     }
 
-    // FUNGSI 8: MEMPROSES DATA CSV FASILITAS UNTUK PETA
-    function processFasilitasData() {
-        const csvElement = document.getElementById('csv-fasilitas');
-        if (!csvElement) return [];
+    // FUNGSI 8: MEMPROSES DATA CSV BANTUAN SOSIAL UNTUK CHART (PIE CHART)
+    function processBantuanData() {
+        const csvElement = document.getElementById('csv-bantuan');
+        if (!csvElement) return null;
 
         const csvData = csvElement.textContent.trim();
         const rows = csvData.split('\n');
-        if (rows.length < 2) return [];
-
+        
+        const labels = [];
+        const data = [];
         const header = rows[0].split(',').map(h => h.trim());
-        const latIndex = header.indexOf('latitude');
-        const lonIndex = header.indexOf('longitude');
-        const namaIndex = header.indexOf('nama_fasilitas');
-        const kategoriIndex = header.indexOf('kategori');
-        const alamatIndex = header.indexOf('alamat');
+        const programIndex = header.indexOf('nama_program_bantuan'); 
+        const penerimaIndex = header.indexOf('jumlah_penerima_kk'); 
 
-        const markers = [];
+        if (programIndex === -1 || penerimaIndex === -1) return null;
+
         for (let i = 1; i < rows.length; i++) {
             const columns = rows[i].split(',');
-            const lat = parseFloat(columns[latIndex]?.trim());
-            const lon = parseFloat(columns[lonIndex]?.trim());
+            const program = columns[programIndex].trim();
+            const penerima = parseInt(columns[penerimaIndex].trim());
 
-            if (!isNaN(lat) && !isNaN(lon)) {
-                markers.push({
-                    lat: lat,
-                    lon: lon,
-                    nama: columns[namaIndex]?.trim(),
-                    kategori: columns[kategoriIndex]?.trim(),
-                    alamat: columns[alamatIndex]?.trim()
-                });
-            }
+            labels.push(program);
+            data.push(penerima);
         }
-        return markers;
+        
+        return { labels, data };
     }
 
-    // FUNGSI 9: MENAMPILKAN PETA LEAFLET
-    function renderFasilitasMap() {
-        if (typeof L === 'undefined') return;
+    // FUNGSI 9: MENAMPILKAN GRAFIK PIE BANTUAN SOSIAL
+    function renderBantuanChart() {
+        if (typeof Chart === 'undefined') return;
 
-        const markerData = processFasilitasData();
+        const processedData = processBantuanData();
+        if (!processedData) return;
+
+        const ctx = document.getElementById('chart-bantuan').getContext('2d');
         
-        // DIKOREKSI: Cek variabel global mapFasilitas
-        if (mapFasilitas) {
-            mapFasilitas.remove();
-            mapFasilitas = null;
+        if (bantuanChart) {
+            bantuanChart.destroy();
         }
-
-        const defaultLat = -7.1245; 
-        const defaultLon = 110.1245; 
-        const centerLat = markerData.length > 0 ? markerData[0].lat : defaultLat;
-        const centerLon = markerData.length > 0 ? markerData[0].lon : defaultLon;
-
-        mapFasilitas = L.map('map-fasilitas').setView([centerLat, centerLon], 14); 
-
-        // Tile Layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(mapFasilitas);
-
-        // Tambahkan Marker
-        markerData.forEach(item => {
-            const popupContent = `
-                <strong>${item.nama}</strong><br>
-                Kategori: ${item.kategori}<br>
-                Alamat: ${item.alamat}<br>
-                Koordinat: ${item.lat}, ${item.lon}
-            `;
-            L.marker([item.lat, item.lon])
-                .addTo(mapFasilitas)
-                .bindPopup(popupContent);
+        
+        bantuanChart = new Chart(ctx, {
+            type: 'pie', 
+            data: {
+                labels: processedData.labels, 
+                datasets: [{
+                    label: 'Jumlah Penerima (KK)',
+                    data: processedData.data,
+                    backgroundColor: [
+                        '#dc3545', 
+                        '#ffc107', 
+                        '#0366d6', 
+                        '#17a2b8', 
+                        '#28a745'  
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                let value = context.parsed;
+                                label += `${value} KK`;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
         });
     }
 
-    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau, Grafik, dan Peta)
+    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
+        // LOGIKA MENYEMBUNYIKAN
         if (container.style.display === 'block') {
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
             
-            // Hapus instance peta saat disembunyikan
-            if (csvId === 'csv-fasilitas' && mapFasilitas) {
-                mapFasilitas.remove();
-                mapFasilitas = null;
-            }
-
         } else {
+            // LOGIKA MENAMPILKAN
             const previewElement = document.getElementById(previewId);
             
             // 1. Cek dan Buat Tabel
@@ -726,12 +775,9 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 renderAnggaranChart();
             }
 
-            // 4. RENDER PETA
-            if (csvId === 'csv-fasilitas') {
-                container.style.display = 'block'; 
-                button.textContent = 'Sembunyikan Pratinjau';
-                renderFasilitasMap();
-                return; 
+            // 4. RENDER GRAFIK BANTUAN SOSIAL
+            if (csvId === 'csv-bantuan') {
+                renderBantuanChart();
             }
             
             container.style.display = 'block';
