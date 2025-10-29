@@ -186,6 +186,7 @@
     <nav>
         <ul>
             <li><a href="index.html">Beranda</a></li>
+            <li><a href="index.html#main">Semua Data</a></li>
             <li><a href="tentang.html">Tentang</a></li>
             <li><a href="kontak.html">Kontak</a></li>
         </ul>
@@ -353,10 +354,10 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     
     <script>
     
-    // VARIABEL GLOBAL UNTUK INSTANCE PETA DAN GRAFIK
-    let mapFasilitas = null;
-    let window.populationChart = null; // Didefinisikan di window agar bisa di-destroy
-    let window.anggaranChart = null;
+    // VARIABEL GLOBAL UNTUK INSTANCE PETA DAN GRAFIK (DIKOREKSI: Menggunakan var)
+    var mapFasilitas = null;
+    var populationChart = null; 
+    var anggaranChart = null; 
 
     // FUNGSI 1: FILTER/SEARCH DATASET
     function filterData() {
@@ -494,11 +495,12 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
-        if (window.populationChart) {
-            window.populationChart.destroy();
+        // DIKOREKSI: Cek variabel global populationChart
+        if (populationChart) {
+            populationChart.destroy();
         }
         
-        window.populationChart = new Chart(ctx, {
+        populationChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: processedData.labels, 
@@ -573,11 +575,12 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const ctx = document.getElementById('chart-anggaran').getContext('2d');
         
-        if (window.anggaranChart) {
-            window.anggaranChart.destroy();
+        // DIKOREKSI: Cek variabel global anggaranChart
+        if (anggaranChart) {
+            anggaranChart.destroy();
         }
         
-        window.anggaranChart = new Chart(ctx, {
+        anggaranChart = new Chart(ctx, {
             type: 'doughnut', 
             data: {
                 labels: processedData.labels, 
@@ -617,9 +620,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             }
         });
     }
-
-    // Global variable untuk menyimpan instance peta
-    let mapFasilitas = null;
 
     // FUNGSI 8: MEMPROSES DATA CSV FASILITAS UNTUK PETA
     function processFasilitasData() {
@@ -662,6 +662,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         const markerData = processFasilitasData();
         
+        // DIKOREKSI: Cek variabel global mapFasilitas
         if (mapFasilitas) {
             mapFasilitas.remove();
             mapFasilitas = null;
