@@ -115,13 +115,13 @@
 
         .preview-content {
             display: flex;
-            flex-direction: column; /* Default: stack vertically on mobile */
+            flex-direction: column; 
             gap: 20px;
         }
 
         .preview-table {
             order: 1; 
-            /* Mengatur agar tabel tetap berada di dalam viewport */
+            /* FIX: Memastikan scrollbar muncul saat konten melebihi lebar */
             overflow-x: auto; 
             flex-basis: 100%;
         }
@@ -136,10 +136,10 @@
 
         /* Wrapper Grafik untuk Mengatur Ukuran Maksimal */
         .chart-wrapper {
-            max-width: 400px; /* Maksimal lebar untuk grafik */
+            max-width: 400px; 
             width: 100%;
-            position: relative; /* Diperlukan untuk Chart.js responsive */
-            height: 300px; /* Tinggi tetap untuk grafik Bar/Donut */
+            position: relative; 
+            height: 300px; 
         }
         
         /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
@@ -148,28 +148,25 @@
                 flex-direction: row; 
             }
             .preview-table {
-                /* BARU: Tabel mengambil 60% ruang */
                 flex-basis: 60%; 
                 order: 1; 
+                /* FIX PENTING: Memastikan flex item dapat menyusut meski kontennya lebar */
+                min-width: 0; 
             }
             .chart-container {
-                /* BARU: Grafik mengambil 40% ruang */
                 flex-basis: 40%; 
                 order: 2; 
             }
             .chart-wrapper {
-                 /* Pada desktop, biarkan lebar penuh di dalam 40% container */
                  max-width: 100%;
             }
         }
 
         /* Styling Tabel */
         .preview-table table {
-            width: 100%;
+            /* FIX: Hapus width: 100% agar tabel bisa lebih lebar dari containernya saat ada nowrap */
             border-collapse: collapse;
             margin-top: 10px;
-            
-            /* Hapus display: block di sini agar tabel ikut flex-basis */
         }
         .preview-table th, .preview-table td {
             border: 1px solid #ddd;
@@ -557,7 +554,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         const processedData = processPopulationData();
         if (!processedData) return;
 
-        // Penting: Pastikan canvas ada sebelum mencoba mendapatkan konteks
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
         if (populationChart) {
@@ -660,7 +656,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
+                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -743,7 +739,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Penting agar Chart.js menggunakan dimensi dari chart-wrapper
+                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -770,31 +766,25 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
-        // LOGIKA MENYEMBUNYIKAN
         if (container.style.display === 'block') {
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
             
         } else {
-            // LOGIKA MENAMPILKAN
             const previewElement = document.getElementById(previewId);
             
-            // 1. Cek dan Buat Tabel
             if (previewElement.innerHTML.trim() === '') {
                 generatePreview(csvId, previewId, maxRows);
             }
             
-            // 2. RENDER GRAFIK KEPENDUDUKAN
             if (csvId === 'csv-kependudukan') {
                 renderPopulationChart();
             }
             
-            // 3. RENDER GRAFIK ANGGARAN
             if (csvId === 'csv-anggaran') {
                 renderAnggaranChart();
             }
 
-            // 4. RENDER GRAFIK BANTUAN SOSIAL
             if (csvId === 'csv-bantuan') {
                 renderBantuanChart();
             }
