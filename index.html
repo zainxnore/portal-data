@@ -132,7 +132,7 @@
         .preview-table table {
             border-collapse: collapse;
             margin-top: 10px;
-            width: 100%; /* Agar tabel mengisi lebar container */
+            width: 100%; 
         }
         .preview-table th, .preview-table td {
             border: 1px solid #ddd;
@@ -177,34 +177,32 @@
         @media (min-width: 600px) {
             .preview-content {
                 flex-direction: row; 
-                align-items: stretch; /* KUNCI: Membuat tinggi Flex item sama rata */
+                align-items: stretch; 
             }
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
                 min-width: 0; 
-                /* BARU: Memastikan tinggi tabel dapat mengisi ruang yang tersedia */
                 display: flex; 
                 flex-direction: column;
                 height: 100%; 
             }
             .preview-table table {
-                flex-shrink: 0; /* Agar tabel tidak menyusut paksa */
-                width: max-content; /* Biarkan lebar tabel menyesuaikan konten */
-                margin-top: 0; /* Hapus margin atas di desktop */
+                flex-shrink: 0; 
+                width: max-content; 
+                margin-top: 0; 
             }
-            /* Kunci agar Chart Container mengisi penuh tinggi tabel */
             .chart-container {
                 flex-basis: 40%; 
                 order: 2; 
                 min-width: 0; 
-                height: auto; /* Memungkinkan container memanjang */
+                height: auto; 
             }
-            /* Grafik diatur ke rasio aspek untuk membatasi ukurannya */
             .chart-wrapper {
                  max-width: 100%;
-                 /* Tinggi Grafik menyesuaikan rasio aspek (4:3) di ruang yang tersedia */
-                 padding-bottom: 75%; 
+                 /* KUNCI PERBAIKAN: Meningkatkan padding-bottom untuk grafik yang lebih besar */
+                 /* Contoh: 90% untuk sedikit lebih besar, 100% untuk kotak sempurna */
+                 padding-bottom: 90%; /* Disesuaikan agar lebih besar */
                  height: 0; 
             }
         }
@@ -776,103 +774,4 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                     data: processedData.data,
                     backgroundColor: [
                         '#dc3545', 
-                        '#ffc107', 
-                        '#0366d6', 
-                        '#17a2b8', 
-                        '#28a745'  
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, 
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                let value = context.parsed;
-                                label += `${value} KK`;
-                                return label;
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Proporsi Penerima Bantuan Sosial', 
-                        position: 'top',
-                        font: {
-                            size: 14
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
-    function togglePreview(button, containerId, csvId, previewId, maxRows) {
-        const container = document.getElementById(containerId);
-        
-        if (container.style.display === 'flex') {
-            container.style.display = 'none';
-            button.textContent = 'Lihat Pratinjau';
-            
-            // Hancurkan grafik agar tidak mengganggu inisiasi ulang
-            if (populationChart) populationChart.destroy();
-            if (anggaranChart) anggaranChart.destroy();
-            if (bantuanChart) bantuanChart.destroy();
-            
-        } else {
-            const previewElement = document.getElementById(previewId);
-            
-            if (previewElement.innerHTML.trim() === '') {
-                generatePreview(csvId, previewId, maxRows);
-            }
-            
-            if (csvId === 'csv-kependudukan') {
-                renderPopulationChart();
-            }
-            
-            if (csvId === 'csv-anggaran') {
-                renderAnggaranChart();
-            }
-
-            if (csvId === 'csv-bantuan') {
-                renderBantuanChart();
-            }
-            
-            // Mengubah tampilan menjadi flex untuk layout berdampingan (desktop)
-            container.style.display = 'block'; 
-            
-            // Memaksa preview-content menjadi flex setelah container ditampilkan
-            const previewContent = container.querySelector('.preview-content');
-            if (previewContent) {
-                previewContent.style.display = 'flex';
-            }
-
-            button.textContent = 'Sembunyikan Pratinjau';
-        }
-    }
-
-    // FUNGSI 11: EKSEKUSI SAAT HALAMAN DIMUAT
-    window.onload = function() {
-        // Mengganti display:none di CSS preview-container menjadi display:block di JS.
-        // Dan memastikan .preview-content tetap display:flex
-        
-        // Memastikan tombol filter bekerja
-        if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
-            filterData(); 
-        }
-    };
-    </script>
-
-</body>
-</html>
+                        '
