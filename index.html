@@ -105,7 +105,7 @@
             border: none;
         }
         
-        /* CSS PRATINJAU DENGAN FLEXBOX */
+        /* CSS PRATINJAU DENGAN FLEXBOX (KUNCI LAYOUT) */
         .preview-container {
             display: none;
             margin-top: 20px;
@@ -115,26 +115,44 @@
 
         .preview-content {
             display: flex;
-            flex-direction: column; /* Kunci: Selalu tumpuk (Tabel di atas, Grafik di bawah) */
+            flex-direction: column; /* Default: stack vertically on mobile */
             gap: 20px;
-            min-height: 0; 
         }
 
         .preview-table {
-            order: 1; 
-            overflow-x: auto; 
+            order: 1; /* Tabel di atas (default/mobile) */
             flex-basis: 100%;
-            min-width: 0; 
-            min-height: 0;
-            display: flex; 
-            flex-direction: column;
+        }
+
+        .chart-container {
+            order: 2; /* Grafik di bawah (default/mobile) */
+            flex-basis: 100%;
+            display: flex; /* Untuk menengahkan grafik di dalam containernya */
+            justify-content: center;
+        }
+        
+        /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
+        @media (min-width: 600px) {
+            .preview-content {
+                flex-direction: row; 
+            }
+            .preview-table {
+                flex-basis: 65%; /* Tabel lebih lebar */
+                order: 1; /* Tabel tetap di kiri */
+            }
+            .chart-container {
+                flex-basis: 35%; /* Grafik lebih sempit */
+                order: 2; /* Grafik di kanan */
+            }
         }
 
         /* Styling Tabel */
         .preview-table table {
+            width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            width: 100%; 
+            overflow-x: auto; 
+            display: block;
         }
         .preview-table th, .preview-table td {
             border: 1px solid #ddd;
@@ -146,61 +164,16 @@
         .preview-table th {
             background-color: #f2f2f2;
         }
-
-        /* Container Grafik */
-        .chart-container {
-            order: 2; 
-            flex-basis: 100%;
-            display: flex; 
-            justify-content: center;
-            align-items: center; 
-            min-width: 0; 
-            min-height: 0;
-            flex-grow: 1; 
-        }
-
-        /* Wrapper Grafik untuk Mengontrol Rasio Aspek */
-        .chart-wrapper {
-            max-width: 400px; /* Batasi lebar maksimal grafik */
-            width: 100%;
-            position: relative; 
-            padding-bottom: 100%; /* Rasio 1:1 */
-            height: 0; 
-        }
-
-        /* Memastikan canvas mengisi wrapper */
-        .chart-wrapper canvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        
+        footer {
+            text-align: center; 
+            color: #777; 
+            padding: 20px;
+            border-top: 1px solid #eee;
+            margin: 20px auto 0 auto;
+            max-width: 800px;
         }
         
-        /* Media query untuk layar lebar dipertahankan hanya untuk memastikan elemen tidak menjadi terlalu besar */
-        @media (min-width: 600px) {
-            .preview-content {
-                flex-direction: column; /* Pertahankan Stacked Layout */
-                align-items: flex-start; 
-            }
-            .preview-table {
-                flex-basis: 100%; 
-            }
-            .preview-table table {
-                width: 100%; 
-            }
-            
-            .chart-container {
-                flex-basis: 100%; 
-                justify-content: center;
-                align-items: center;
-                padding-top: 0; 
-            }
-            
-            .chart-wrapper {
-                 max-width: 400px; /* Memastikan grafik tidak terlalu lebar */
-                 padding-bottom: 100%;
-            }
-        }
-
         /* CSS BARU UNTUK KOTAK SEARCH */
         #searchInput {
             width: 100%; 
@@ -237,14 +210,6 @@
             border-color: #0366d6;
         }
         
-        footer {
-            text-align: center; 
-            color: #777; 
-            padding: 20px;
-            border-top: 1px solid #eee;
-            margin: 20px auto 0 auto;
-            max-width: 800px;
-        }
     </style>
 </head>
 <body>
@@ -296,7 +261,8 @@
                     <div id="preview-kependudukan" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div class="chart-wrapper">
+                        <div style="max-width: 350px;">
+                            <h4 style="margin-top: 0; text-align: center;">Grafik Total Penduduk</h4>
                             <canvas id="chart-kependudukan"></canvas>
                         </div>
                     </div>
@@ -334,7 +300,7 @@ Dusun Sawahan,> 55 Tahun,50,60,110
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-fasilitas', 'csv-fasilitas', 'preview-fasilitas', 6)">Lihat Pratinjau</button>
             
             <div id="preview-container-fasilitas" class="preview-container">
-                <h4 style="margin-top: 0;'>Pratinjau (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
                 <div id="preview-fasilitas" class="preview-table"></div>
             </div>
 
@@ -362,13 +328,14 @@ FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.12
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-anggaran', 'csv-anggaran', 'preview-anggaran', 7)">Lihat Pratinjau</button>
             
             <div id="preview-container-anggaran" class="preview-container">
-                <h4 style="margin-top: 0;'>Pratinjau Data (7 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Pratinjau Data (7 Baris Pertama)</h4>
                 
                 <div class="preview-content">
                     <div id="preview-anggaran" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div class="chart-wrapper">
+                        <div style="max-width: 300px;">
+                            <h4 style="margin-top: 0; text-align: center;">Proporsi Anggaran</h4>
                             <canvas id="chart-anggaran"></canvas>
                         </div>
                     </div>
@@ -401,13 +368,14 @@ Pembinaan Kemasyarakatan,Pembinaan Karang Taruna,30000000,28000000,93.33
             <button class="preview-button" onclick="togglePreview(this, 'preview-container-bantuan', 'csv-bantuan', 'preview-bantuan', 6)">Lihat Pratinjau</button>
             
             <div id="preview-container-bantuan" class="preview-container">
-                <h4 style="margin-top: 0;'>Pratinjau Data (6 Baris Pertama)</h4>
+                <h4 style="margin-top: 0;">Pratinjau Data (6 Baris Pertama)</h4>
 
                 <div class="preview-content">
                     <div id="preview-bantuan" class="preview-table"></div>
                     
                     <div class="chart-container">
-                        <div class="chart-wrapper">
+                        <div style="max-width: 300px;">
+                            <h4 style="margin-top: 0; text-align: center;">Proporsi Penerima Bantuan</h4>
                             <canvas id="chart-bantuan"></canvas>
                         </div>
                     </div>
@@ -446,6 +414,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         var main = document.getElementById('main');
         var cards = main.getElementsByClassName('dataset');
         
+        // Nonaktifkan tombol kategori saat melakukan pencarian
         const buttons = document.getElementById('categoryFilterButtons').getElementsByTagName('button');
         for (let i = 0; i < buttons.length; i++) {
              buttons[i].classList.remove('active');
@@ -520,15 +489,12 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
 
         // Buat Data
         for (let i = 1; i < previewRows.length; i++) {
-            const columns = rows[i].split(','); 
-            
-            if (i < maxRows) { 
-                html += '<tr>';
-                for (let j = 0; j < headers.length; j++) { 
-                    html += `<td>${columns[j] ? columns[j].trim() : ''}</td>`;
-                }
-                html += '</tr>';
-            }
+            const columns = previewRows[i].split(',');
+            html += '<tr>';
+            columns.forEach(column => {
+                html += `<td>${column.trim()}</td>`;
+            });
+            html += '</tr>';
         }
 
         html += '</tbody></table>';
@@ -607,27 +573,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                 scales: {
                     y: {
                         beginAtZero: true
-                    },
-                    x: {
-                         position: 'bottom', 
-                    }
-                },
-                layout: {
-                    padding: {
-                        bottom: 0 
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false 
-                    },
-                    title: {
-                        display: true,
-                        text: 'Grafik Total Penduduk per Dusun', 
-                        position: 'top',
-                        font: {
-                            size: 14
-                        }
                     }
                 }
             }
@@ -698,7 +643,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -714,14 +658,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                 label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
                                 return label;
                             }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Proporsi Anggaran per Bidang', 
-                        position: 'top',
-                        font: {
-                            size: 14
                         }
                     }
                 }
@@ -789,7 +725,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, 
                 plugins: {
                     legend: {
                         position: 'top',
@@ -806,14 +741,6 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                 return label;
                             }
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Proporsi Penerima Bantuan Sosial', 
-                        position: 'top',
-                        font: {
-                            size: 14
-                        }
                     }
                 }
             }
@@ -824,44 +751,36 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
-        if (container.style.display === 'block') { 
+        // LOGIKA MENYEMBUNYIKAN
+        if (container.style.display === 'block') {
             container.style.display = 'none';
             button.textContent = 'Lihat Pratinjau';
             
-            // Hapus instance chart saat ditutup
-            if (populationChart) { populationChart.destroy(); populationChart = null; }
-            if (anggaranChart) { anggaranChart.destroy(); anggaranChart = null; }
-            if (bantuanChart) { bantuanChart.destroy(); bantuanChart = null; }
-            
         } else {
+            // LOGIKA MENAMPILKAN
             const previewElement = document.getElementById(previewId);
             
-            // Generate tabel hanya jika belum ada
+            // 1. Cek dan Buat Tabel
             if (previewElement.innerHTML.trim() === '') {
                 generatePreview(csvId, previewId, maxRows);
             }
             
-            // Render grafik sesuai ID datasetnya
-            if (csvId === 'csv-kependudukan' && document.getElementById('chart-kependudukan')) {
+            // 2. RENDER GRAFIK KEPENDUDUKAN
+            if (csvId === 'csv-kependudukan') {
                 renderPopulationChart();
             }
             
-            if (csvId === 'csv-anggaran' && document.getElementById('chart-anggaran')) {
+            // 3. RENDER GRAFIK ANGGARAN
+            if (csvId === 'csv-anggaran') {
                 renderAnggaranChart();
             }
 
-            if (csvId === 'csv-bantuan' && document.getElementById('chart-bantuan')) {
+            // 4. RENDER GRAFIK BANTUAN SOSIAL
+            if (csvId === 'csv-bantuan') {
                 renderBantuanChart();
             }
             
-            container.style.display = 'block'; 
-
-            // Memastikan konten preview tampil sebagai flex
-            const previewContent = container.querySelector('.preview-content');
-            if (previewContent) {
-                previewContent.style.display = 'flex';
-            }
-
+            container.style.display = 'block';
             button.textContent = 'Sembunyikan Pratinjau';
         }
     }
