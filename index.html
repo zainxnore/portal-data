@@ -183,6 +183,7 @@
     <nav>
         <ul>
             <li><a href="index.html">Beranda</a></li>
+            <li><a href="index.html#main">Semua Data</a></li>
             <li><a href="tentang.html">Tentang</a></li>
             <li><a href="kontak.html">Kontak</a></li>
         </ul>
@@ -222,7 +223,10 @@
             <div id="preview-container-kependudukan" class="preview-container">
                 <h4 style="margin-top: 0;">Pratinjau (6 Baris Pertama)</h4>
                 <div id="preview-kependudukan" class="preview-table"></div>
-            </div>
+                
+                <h4 style="margin-top: 25px;">Grafik Total Penduduk per Dusun:</h4>
+                <canvas id="chart-kependudukan" style="max-height: 300px;"></canvas>
+                </div>
 
             <pre class="raw-csv-data" id="csv-kependudukan" style="display:none;">
 dusun,kelompok_usia,jumlah_laki_laki,jumlah_perempuan,total
@@ -333,6 +337,8 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         <p>Website ini dibuat menggunakan GitHub Pages.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script> 
+
     <script>
     
     // FUNGSI 1: FILTER/SEARCH DATASET
@@ -363,7 +369,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         }
     }
 
-    // FUNGSI 2: FILTER BERDASARKAN KATEGORI (BARU)
+    // FUNGSI 2: FILTER BERDASARKAN KATEGORI
     function filterByCategory(buttonElement, category) {
         const main = document.getElementById('main');
         const cards = main.getElementsByClassName('dataset');
@@ -381,14 +387,11 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         // 3. Lakukan Filtering
         for (let i = 0; i < cards.length; i++) {
             const dataset = cards[i];
-            // Ambil elemen span yang berisi Kategori (Span anak pertama dari div metadata)
             const categorySpan = dataset.querySelector('.metadata span:nth-child(1)'); 
             
             if (category === 'SEMUA') {
-                // Jika memilih 'Semua Data', tampilkan semua
                 dataset.style.display = "";
             } else if (categorySpan) {
-                // Ambil teks kategori (misal: "Demografi")
                 const categoryText = categorySpan.textContent.split(':').pop().trim();
 
                 if (categoryText === category) {
@@ -414,7 +417,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         
         let html = '<table>';
         
-        // Buat Header (baris pertama)
+        // Buat Header
         const headers = previewRows[0].split(',');
         html += '<thead><tr>';
         headers.forEach(header => {
@@ -422,7 +425,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         });
         html += '</tr></thead><tbody>';
 
-        // Buat Data (mulai dari baris kedua)
+        // Buat Data
         for (let i = 1; i < previewRows.length; i++) {
             const columns = previewRows[i].split(',');
             html += '<tr>';
@@ -436,7 +439,87 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         outputElement.innerHTML = html;
     }
     
-    // FUNGSI 4: TOGGLE (Menampilkan/Menyembunyikan Pratinjau)
+    // FUNGSI 4: MEMPROSES DATA CSV PENDUDUK UNTUK CHART
+    function processPopulationData() {
+        const csvElement = document.getElementById('csv-kependudukan');
+        if (!csvElement) return null;
+
+        const csvData = csvElement.textContent.trim();
+        const rows = csvData.split('\n');
+        
+        const totals = {};
+        const header = rows[0].split(',').map(h => h.trim());
+        const totalIndex = header.indexOf('total'); 
+        const dusunIndex = header.indexOf('dusun'); 
+
+        if (totalIndex === -1 || dusunIndex === -1) return null;
+
+        for (let i = 1; i < rows.length; i++) {
+            const columns = rows[i].split(',');
+            const dusun = columns[dusunIndex].trim();
+            const total = parseInt(columns[totalIndex].trim());
+
+            if (totals[dusun]) {
+                totals[dusun] += total;
+            } else {
+                totals[dusun] = total;
+            }
+        }
+        
+        return {
+            labels: Object.keys(totals),
+            data: Object.values(totals)
+        };
+    }
+
+    // FUNGSI 5: MENAMPILKAN GRAFIK
+    function renderPopulationChart() {
+        // Hanya render jika Chart.js sudah dimuat
+        if (typeof Chart === 'undefined') return;
+
+        const processedData = processPopulationData();
+        if (!processedData) return;
+
+        const ctx = document.getElementById('chart-kependudukan').getContext('2d');
+        
+        // Hancurkan grafik lama jika ada (agar tidak tumpang tindih)
+        if (window.populationChart) {
+            window.populationChart.destroy();
+        }
+        
+        window.populationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: processedData.labels, 
+                datasets: [{
+                    label: 'Total Penduduk',
+                    data: processedData.data,
+                    backgroundColor: [
+                        'rgba(3, 102, 214, 0.7)',
+                        'rgba(40, 167, 69, 0.7)',
+                        'rgba(255, 193, 7, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(3, 102, 214, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(255, 193, 7, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, 
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // FUNGSI 6: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
     function togglePreview(button, containerId, csvId, previewId, maxRows) {
         const container = document.getElementById(containerId);
         
@@ -446,8 +529,14 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         } else {
             const previewElement = document.getElementById(previewId);
             
+            // 1. Cek dan Buat Tabel
             if (previewElement.innerHTML.trim() === '') {
                 generatePreview(csvId, previewId, maxRows);
+            }
+            
+            // 2. JIKA DATA KEPENDUDUKAN, RENDER GRAFIK
+            if (csvId === 'csv-kependudukan') {
+                renderPopulationChart();
             }
             
             container.style.display = 'block';
@@ -455,7 +544,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         }
     }
 
-    // FUNGSI 5: EKSEKUSI SAAT HALAMAN DIMUAT
+    // FUNGSI 7: EKSEKUSI SAAT HALAMAN DIMUAT
     window.onload = function() {
         if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
             filterData(); 
