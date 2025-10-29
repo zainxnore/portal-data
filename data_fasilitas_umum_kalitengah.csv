@@ -1,0 +1,6 @@
+id,nama_fasilitas,kategori,dusun,alamat,latitude,longitude
+FAS-001,Kantor Desa Kalitengah,Pemerintahan,Krajan,Jl. Raya Kalitengah No. 1,-7.12345,110.12345
+FAS-002,SD Negeri Kalitengah 1,Pendidikan,Krajan,Jl. Pendidikan No. 10,-7.124,110.124
+FAS-003,Posyandu Mekar Jaya,Kesehatan,Gebang,Jl. Sehat No. 5,-7.1255,110.1255
+FAS-004,Masjid Jami' Al-Hidayah,Tempat Ibadah,Sawahan,Jl. Ibadah No. 1,-7.126,110.126
+FAS-005,Pasar Desa Kalitengah,Ekonomi,Krajan,Jl. Pasar Lama No. 50,-7.123,110.123
