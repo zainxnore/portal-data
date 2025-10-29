@@ -180,20 +180,20 @@
         @media (min-width: 600px) {
             .preview-content {
                 flex-direction: row; 
-                align-items: stretch; 
+                align-items: flex-start; /* JANGAN stretch, agar tinggi mengikuti konten terpendek */
             }
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
                 min-width: 0; 
-                height: auto; /* Biarkan tabel menentukan tinggi */
+                height: auto; 
             }
             .preview-table table {
                 flex-shrink: 0; 
                 width: max-content; 
                 margin-top: 0; 
             }
-            /* Ubah chart-container kembali ke basis yang memungkinkan rasio aspek */
+            
             .chart-container {
                 flex-basis: 40%; 
                 order: 2; 
@@ -201,12 +201,11 @@
                 height: auto; 
             }
             
-            /* KUNCI PERBAIKAN: Menggunakan rasio aspek yang lebih besar (130%) */
+            /* KUNCI PERBAIKAN: Menggunakan rasio aspek yang lebih proporsional (115%) */
             .chart-wrapper {
                  max-width: 100%;
                  height: 0;
-                 /* MENINGKATKAN UKURAN VISUALISASI */
-                 padding-bottom: 130%; /* 130% dari lebar, akan lebih tinggi */
+                 padding-bottom: 115%; /* Proporsi yang lebih baik */
                  width: 100%; 
             }
             
