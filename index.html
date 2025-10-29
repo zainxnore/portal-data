@@ -200,9 +200,8 @@
             }
             .chart-wrapper {
                  max-width: 100%;
-                 /* KUNCI PERBAIKAN: Meningkatkan padding-bottom untuk grafik yang lebih besar */
-                 /* Contoh: 90% untuk sedikit lebih besar, 100% untuk kotak sempurna */
-                 padding-bottom: 90%; /* Disesuaikan agar lebih besar */
+                 /* UKURAN LEBIH BESAR: 90% (Hampir kotak) */
+                 padding-bottom: 90%; 
                  height: 0; 
             }
         }
@@ -774,4 +773,101 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                     data: processedData.data,
                     backgroundColor: [
                         '#dc3545', 
-                        '
+                        '#ffc107', 
+                        '#0366d6', 
+                        '#17a2b8', 
+                        '#28a745'  
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, 
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                let value = context.parsed;
+                                label += `${value} KK`;
+                                return label;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Proporsi Penerima Bantuan Sosial', 
+                        position: 'top',
+                        font: {
+                            size: 14
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
+    function togglePreview(button, containerId, csvId, previewId, maxRows) {
+        const container = document.getElementById(containerId);
+        
+        if (container.style.display === 'block') { // Cek apakah sedang ditampilkan (block)
+            container.style.display = 'none';
+            button.textContent = 'Lihat Pratinjau';
+            
+            // Hancurkan grafik agar tidak mengganggu inisiasi ulang
+            if (populationChart) populationChart.destroy();
+            if (anggaranChart) anggaranChart.destroy();
+            if (bantuanChart) bantuanChart.destroy();
+            
+        } else {
+            const previewElement = document.getElementById(previewId);
+            
+            if (previewElement.innerHTML.trim() === '') {
+                generatePreview(csvId, previewId, maxRows);
+            }
+            
+            // Render grafik hanya jika ada elemen canvas
+            if (csvId === 'csv-kependudukan' && document.getElementById('chart-kependudukan')) {
+                renderPopulationChart();
+            }
+            
+            if (csvId === 'csv-anggaran' && document.getElementById('chart-anggaran')) {
+                renderAnggaranChart();
+            }
+
+            if (csvId === 'csv-bantuan' && document.getElementById('chart-bantuan')) {
+                renderBantuanChart();
+            }
+            
+            // Menampilkan container pratinjau
+            container.style.display = 'block'; 
+
+            // Memaksa preview-content menjadi flex
+            const previewContent = container.querySelector('.preview-content');
+            if (previewContent) {
+                previewContent.style.display = 'flex';
+            }
+
+            button.textContent = 'Sembunyikan Pratinjau';
+        }
+    }
+
+    // FUNGSI 11: EKSEKUSI SAAT HALAMAN DIMUAT
+    window.onload = function() {
+        // Hanya untuk memastikan fungsi filter data berjalan saat dimuat
+        if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
+            filterData(); 
+        }
+    };
+    </script>
+
+</body>
+</html>
