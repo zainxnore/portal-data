@@ -121,12 +121,11 @@
 
         .preview-table {
             order: 1; 
-            /* FIX: Memastikan scrollbar muncul saat konten melebihi lebar */
             overflow-x: auto; 
             flex-basis: 100%;
         }
 
-        /* Container Grafik (PENTING: Menjaga Rasio dan Proporsionalitas) */
+        /* Container Grafik */
         .chart-container {
             order: 2; 
             flex-basis: 100%;
@@ -134,12 +133,21 @@
             justify-content: center;
         }
 
-        /* Wrapper Grafik untuk Mengatur Ukuran Maksimal */
+        /* Wrapper Grafik untuk Mengontrol Rasio Aspek pada Mobile */
         .chart-wrapper {
             max-width: 400px; 
             width: 100%;
             position: relative; 
-            height: 300px; 
+            /* Memberikan rasio aspek persegi untuk tampilan default/mobile */
+            padding-bottom: 100%; 
+            height: 0; 
+        }
+
+        /* Memastikan canvas mengisi wrapper */
+        .chart-wrapper canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
         }
         
         /* Jika layar lebar (> 600px), atur menjadi dua kolom (Tabel kiri, Grafik kanan) */
@@ -150,7 +158,6 @@
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
-                /* FIX PENTING: Memastikan flex item dapat menyusut meski kontennya lebar */
                 min-width: 0; 
             }
             .chart-container {
@@ -159,12 +166,15 @@
             }
             .chart-wrapper {
                  max-width: 100%;
+                 /* KUNCI PERBAIKAN: Kontrol Ketinggian Grafik di Desktop (agar proporsional dengan tabel) */
+                 max-height: 350px; 
+                 padding-bottom: 0; 
+                 height: 350px; 
             }
         }
 
         /* Styling Tabel */
         .preview-table table {
-            /* FIX: Hapus width: 100% agar tabel bisa lebih lebar dari containernya saat ada nowrap */
             border-collapse: collapse;
             margin-top: 10px;
         }
