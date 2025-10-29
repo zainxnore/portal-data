@@ -117,13 +117,28 @@
             display: flex;
             flex-direction: column; 
             gap: 20px;
+            /* BARU: Memastikan konten Flexbox utama memiliki tinggi minimum 0 untuk menyusut */
+            min-height: 0; 
         }
 
         .preview-table {
             order: 1; 
             overflow-x: auto; 
             flex-basis: 100%;
+            /* BARU: Memastikan Flex item dapat menyusut dan discroll */
+            min-width: 0; 
+            min-height: 0;
+            display: flex; /* BARU: Jadikan flex container untuk konten dalamnya */
+            flex-direction: column; /* BARU: Agar table header dan body tidak memicu scroll ganda */
         }
+
+        /* BARU: Agar table body bisa discroll terpisah jika perlu */
+        .preview-table table {
+            flex-grow: 1; /* BARU: Agar tabel mengisi tinggi yang tersedia */
+            overflow-y: auto; /* BARU: Jika tabel terlalu tinggi, body-nya bisa discroll */
+            height: fit-content; /* BARU: Penting untuk kombinasi dengan flex-grow */
+        }
+
 
         /* Container Grafik */
         .chart-container {
@@ -131,6 +146,10 @@
             flex-basis: 100%;
             display: flex; 
             justify-content: center;
+            align-items: center; /* BARU: Pusatkan grafik secara vertikal */
+            /* BARU: Memastikan Flex item dapat menyusut */
+            min-width: 0; 
+            min-height: 0;
         }
 
         /* Wrapper Grafik untuk Mengontrol Rasio Aspek pada Mobile */
@@ -153,24 +172,36 @@
         @media (min-width: 600px) {
             .preview-content {
                 flex-direction: row; 
+                /* KUNCI: Membuat tinggi Flex container sama */
+                align-items: stretch; /* BARU: Memastikan item flex mengisi tinggi container */
             }
             .preview-table {
                 flex-basis: 60%; 
                 order: 1; 
                 min-width: 0; 
+                min-height: 0;
+                /* BARU: Tinggi disetel agar tidak melebihi container */
+                height: auto; 
+            }
+            .preview-table table {
+                height: 100%; /* BARU: Tabel mengisi 100% tinggi parent (preview-table) */
+                overflow-y: auto; /* Jika isi tabel panjang, scroll di dalam area tabel */
             }
             .chart-container {
                 flex-basis: 40%; 
                 order: 2; 
-                /* KUNCI PERBAIKAN: Menambahkan padding di bawah container grafik */
-                padding-bottom: 20px; /* Tambahkan ruang untuk menyamai tinggi scrollbar horizontal tabel */
+                min-width: 0; 
+                min-height: 0;
+                /* BARU: Tinggi disetel agar tidak melebihi container */
+                height: auto; 
+                padding-bottom: 0; /* Hapus padding yang statis */
             }
             .chart-wrapper {
                  max-width: 100%;
-                 /* Tinggi tetap 350px agar seimbang */
-                 max-height: 350px; 
-                 padding-bottom: 0; 
-                 height: 350px; 
+                 /* KUNCI PERBAIKAN: Tinggi Grafik sekarang akan menyesuaikan dengan tinggi tabel */
+                 /* Hapus max-height dan height tetap yang sebelumnya */
+                 padding-bottom: 75%; /* Rasio aspek 4:3, bisa diubah (misal 100% untuk 1:1) */
+                 height: 0; /* Penting untuk teknik rasio aspek */
             }
         }
 
@@ -563,7 +594,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         if (typeof Chart === 'undefined') return;
 
         const processedData = processPopulationData();
-        if (!processedData) return;
+        if (!processedData) return null;
 
         const ctx = document.getElementById('chart-kependudukan').getContext('2d');
         
@@ -598,9 +629,23 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                     y: {
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Sembunyikan legenda untuk grafik bar tunggal
+                    },
+                    title: {
+                        display: true,
+                        text: 'Grafik Total Penduduk', // Pindahkan judul ke opsi grafik
+                        position: 'top',
+                        font: {
+                            size: 14
+                        }
+                    }
                 }
             }
         });
+        return populationChart;
     }
 
     // FUNGSI 6: MEMPROSES DATA CSV ANGGARAN UNTUK CHART (DONUT CHART)
@@ -641,7 +686,7 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
         if (typeof Chart === 'undefined') return;
 
         const processedData = processAnggaranData();
-        if (!processedData) return;
+        if (!processedData) return null;
 
         const ctx = document.getElementById('chart-anggaran').getContext('2d');
         
@@ -684,134 +729,13 @@ Bantuan Siswa Miskin (BSM),APBD Kabupaten,Siswa Kurang Mampu,55
                                 return label;
                             }
                         }
-                    }
-                }
-            }
-        });
-    }
-
-    // FUNGSI 8: MEMPROSES DATA CSV BANTUAN SOSIAL UNTUK CHART (PIE CHART)
-    function processBantuanData() {
-        const csvElement = document.getElementById('csv-bantuan');
-        if (!csvElement) return null;
-
-        const csvData = csvElement.textContent.trim();
-        const rows = csvData.split('\n');
-        
-        const labels = [];
-        const data = [];
-        const header = rows[0].split(',').map(h => h.trim());
-        const programIndex = header.indexOf('nama_program_bantuan'); 
-        const penerimaIndex = header.indexOf('jumlah_penerima_kk'); 
-
-        if (programIndex === -1 || penerimaIndex === -1) return null;
-
-        for (let i = 1; i < rows.length; i++) {
-            const columns = rows[i].split(',');
-            const program = columns[programIndex].trim();
-            const penerima = parseInt(columns[penerimaIndex].trim());
-
-            labels.push(program);
-            data.push(penerima);
-        }
-        
-        return { labels, data };
-    }
-
-    // FUNGSI 9: MENAMPILKAN GRAFIK PIE BANTUAN SOSIAL
-    function renderBantuanChart() {
-        if (typeof Chart === 'undefined') return;
-
-        const processedData = processBantuanData();
-        if (!processedData) return;
-
-        const ctx = document.getElementById('chart-bantuan').getContext('2d');
-        
-        if (bantuanChart) {
-            bantuanChart.destroy();
-        }
-        
-        bantuanChart = new Chart(ctx, {
-            type: 'pie', 
-            data: {
-                labels: processedData.labels, 
-                datasets: [{
-                    label: 'Jumlah Penerima (KK)',
-                    data: processedData.data,
-                    backgroundColor: [
-                        '#dc3545', 
-                        '#ffc107', 
-                        '#0366d6', 
-                        '#17a2b8', 
-                        '#28a745'  
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, 
-                plugins: {
-                    legend: {
-                        position: 'top',
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                let value = context.parsed;
-                                label += `${value} KK`;
-                                return label;
-                            }
+                    title: {
+                        display: true,
+                        text: 'Proporsi Anggaran', // Pindahkan judul ke opsi grafik
+                        position: 'top',
+                        font: {
+                            size: 14
                         }
                     }
                 }
-            }
-        });
-    }
-
-    // FUNGSI 10: TOGGLE (Menampilkan/Menyembunyikan Pratinjau dan Grafik)
-    function togglePreview(button, containerId, csvId, previewId, maxRows) {
-        const container = document.getElementById(containerId);
-        
-        if (container.style.display === 'block') {
-            container.style.display = 'none';
-            button.textContent = 'Lihat Pratinjau';
-            
-        } else {
-            const previewElement = document.getElementById(previewId);
-            
-            if (previewElement.innerHTML.trim() === '') {
-                generatePreview(csvId, previewId, maxRows);
-            }
-            
-            if (csvId === 'csv-kependudukan') {
-                renderPopulationChart();
-            }
-            
-            if (csvId === 'csv-anggaran') {
-                renderAnggaranChart();
-            }
-
-            if (csvId === 'csv-bantuan') {
-                renderBantuanChart();
-            }
-            
-            container.style.display = 'block';
-            button.textContent = 'Sembunyikan Pratinjau';
-        }
-    }
-
-    // FUNGSI 11: EKSEKUSI SAAT HALAMAN DIMUAT
-    window.onload = function() {
-        if (document.getElementById('searchInput') && document.getElementById('searchInput').value) {
-            filterData(); 
-        }
-    };
-    </script>
-
-</body>
-</html>
